@@ -2,7 +2,7 @@
   "version": "2026-09-10",
   "window": "2026-09-04 至 09-10",
   "todayNew": [
-    { "name": "热辣滚烫", "channel": "CCTV-6 电影频道", "info": "票房 34.25亿（贾玲导演）\n9/10（周四）12:22 首轮播出", "newToday": true }
+    { "name": "热辣滚烫", "channel": "CCTV-6 电影频道", "info": "票房 34.25亿\n9/10（周四）12:22 首轮播出", "newToday": true }
   ],
   "cctv6Movies": [
     { "name": "热辣滚烫", "channel": "CCTV-6 电影频道", "info": "票房 34.25亿\n9/10（周四）12:22 播出", "newToday": true },
