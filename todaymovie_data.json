@@ -1,0 +1,34 @@
+{
+  "version": "2026-09-10",
+  "window": "2026-09-04 至 09-10",
+  "todayNew": [
+    { "name": "热辣滚烫", "channel": "CCTV-6 电影频道", "info": "票房 34.25亿（贾玲导演）\n9/10（周四）12:22 首轮播出", "newToday": true }
+  ],
+  "cctv6Movies": [
+    { "name": "热辣滚烫", "channel": "CCTV-6 电影频道", "info": "票房 34.25亿\n9/10（周四）12:22 播出", "newToday": true },
+    { "name": "拯救大兵瑞恩", "channel": "CCTV-6 电影频道", "info": "豆瓣TOP250第76名（9.1分）\n9/6（周日）22:24 佳片有约，分上下半场", "newToday": false },
+    { "name": "镖人：风起大漠", "channel": "CCTV-6 电影频道", "info": "票房 14.5亿\n9/6（周日）17:17 播出", "newToday": false },
+    { "name": "捕风追影", "channel": "CCTV-6 电影频道", "info": "票房 12.7亿\n9/4、9/9 两轮播出", "newToday": false },
+    { "name": "哥斯拉大战金刚", "channel": "CCTV-6 电影频道", "info": "票房 12.3亿\n9/7（周一）22:23 播出", "newToday": false },
+    { "name": "人生路不熟", "channel": "CCTV-6 电影频道", "info": "票房 11.9亿\n9/9（周三）12:33 播出", "newToday": false },
+    { "name": "巨齿鲨", "channel": "CCTV-6 电影频道", "info": "票房 10.5亿\n9/9（周三）17:59 播出", "newToday": false },
+    { "name": "狂暴巨兽", "channel": "CCTV-6 电影频道", "info": "票房 10亿\n9/8（周二）22:24 播出", "newToday": false },
+    { "name": "巨齿鲨2", "channel": "CCTV-6 电影频道", "info": "票房 8.5亿\n9/9、9/10 播出", "newToday": false },
+    { "name": "非凡任务", "channel": "CCTV-6 电影频道", "info": "票房 1.56亿\n9/7、9/8 播出", "newToday": false },
+    { "name": "鲨滩", "channel": "CCTV-6 电影频道", "info": "票房 1.02亿\n9/9（周三）22:24 播出", "newToday": false }
+  ],
+  "itvMovies": [
+    { "name": "勇敢者游戏：决战丛林", "channel": "江苏IPTV 限免", "info": "2018-01-12内地公映，票房4.92亿\n限免期 9/2-9/8", "newToday": false },
+    { "name": "亲爱的小孩", "channel": "江苏IPTV 限免", "info": "豆瓣7.7\n限免期 9/2-9/8", "newToday": false },
+    { "name": "死神来了：血脉诅咒", "channel": "海南电信IPTV 限免", "info": "2025-08-22内地公映，票房破亿\n9/9 限免", "newToday": false }
+  ],
+  "dramas": [
+    { "name": "人世间", "channel": "CCTV-8 电视剧", "info": "豆瓣8.4；白玉兰2022最佳；原著第10届茅盾文学奖\n9/4-9/10 每天凌晨4集连播，共28场", "newToday": false },
+    { "name": "藏海传", "channel": "CCTV-12 社会与法", "info": "豆瓣7.1；2025年央视大剧\n9/4-9/10 午间+晚间各3集，共42场", "newToday": false },
+    { "name": "家业", "channel": "CCTV-1 综合", "info": "豆瓣7.3；2026年央视大剧\n9/7-9/10 上午档，共10场", "newToday": false },
+    { "name": "父母爱情", "channel": "河北卫视/湖北卫视", "info": "飞天奖2015现实题材优秀电视剧；豆瓣9.5\n9/4-9/10 共31场", "newToday": false },
+    { "name": "外交风云", "channel": "山东卫视/深圳卫视", "info": "2019年献礼剧\n9/4、9/10 各播1场", "newToday": false },
+    { "name": "跨过鸭绿江", "channel": "西藏卫视", "info": "豆瓣8.4；金鹰奖2022优秀电视剧\n9/4 晚间2集连播，共2场", "newToday": false },
+    { "name": "天行健", "channel": "厦门卫视", "info": "豆瓣8.8\n9/4-9/10 下午档每天2-3集，共7场", "newToday": false }
+  ]
+}
