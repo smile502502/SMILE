@@ -1,8 +1,13 @@
 {
-  "version": "2026-09-11",
-  "window": "2026-09-05 至 09-11",
+  "version": "2026-09-12",
+  "window": "2026-09-06 至 09-12",
   "todayNew": [
-    { "name": "北上", "channel": "CCTV-11 戏曲频道", "info": "文学奖改编剧（原著第10届茅盾文学奖）\n9/11（周五）CCTV-11 戏曲频道播出", "newToday": true }
+    { "name": "星球大战外传：侠盗一号", "channel": "CCTV-6 电影频道", "info": "票房 4.78亿\n9/12（周六）10:03 播出", "newToday": true },
+    { "name": "追龙Ⅱ", "channel": "CCTV-6 电影频道", "info": "票房 3.09亿\n9/12（周六）18:09 播出", "newToday": true },
+    { "name": "误判", "channel": "CCTV-6 电影频道", "info": "票房 2.71亿\n9/12（周六）19:56 播出", "newToday": true },
+    { "name": "熊出没·年年有熊", "channel": "江苏IPTV 限免", "info": "票房约10亿\n9/9 起限免", "newToday": true },
+    { "name": "欢乐家长群2", "channel": "江苏IPTV 限免", "info": "豆瓣 7.4\n9/9 起限免", "newToday": true },
+    { "name": "铁血淞沪", "channel": "江苏IPTV 限免", "info": "豆瓣 7.5\n9/9 起限免", "newToday": true }
   ],
   "cctv6Movies": [
     { "name": "热辣滚烫", "channel": "CCTV-6 电影频道", "info": "票房 34.25亿\n9/10（周四）12:22 播出", "newToday": false },
@@ -14,21 +19,25 @@
     { "name": "巨齿鲨", "channel": "CCTV-6 电影频道", "info": "票房 10.5亿\n9/9（周三）17:59 播出", "newToday": false },
     { "name": "狂暴巨兽", "channel": "CCTV-6 电影频道", "info": "票房 10亿\n9/8（周二）22:24 播出", "newToday": false },
     { "name": "巨齿鲨2", "channel": "CCTV-6 电影频道", "info": "票房 8.5亿\n9/9、9/10 播出", "newToday": false },
+    { "name": "星球大战外传：侠盗一号", "channel": "CCTV-6 电影频道", "info": "票房 4.78亿\n9/12（周六）10:03 播出", "newToday": true },
+    { "name": "追龙Ⅱ", "channel": "CCTV-6 电影频道", "info": "票房 3.09亿\n9/12（周六）18:09 播出", "newToday": true },
+    { "name": "误判", "channel": "CCTV-6 电影频道", "info": "票房 2.71亿\n9/12（周六）19:56 播出", "newToday": true },
     { "name": "非凡任务", "channel": "CCTV-6 电影频道", "info": "票房 1.56亿\n9/7、9/8 播出", "newToday": false },
     { "name": "鲨滩", "channel": "CCTV-6 电影频道", "info": "票房 1.02亿\n9/9（周三）22:24 播出", "newToday": false }
   ],
   "itvMovies": [
-    { "name": "勇敢者游戏：决战丛林", "channel": "江苏IPTV 限免", "info": "2018-01-12内地公映，票房4.92亿\n限免期 9/2-9/8", "newToday": false },
-    { "name": "亲爱的小孩", "channel": "江苏IPTV 限免", "info": "豆瓣7.7\n限免期 9/2-9/8", "newToday": false },
+    { "name": "熊出没·年年有熊", "channel": "江苏IPTV 限免", "info": "票房约10亿\n9/9 起限免", "newToday": true },
     { "name": "死神来了：血脉诅咒", "channel": "海南电信IPTV 限免", "info": "2025-08-22内地公映，票房破亿\n9/9 起限免", "newToday": false }
   ],
   "dramas": [
-    { "name": "北上", "channel": "CCTV-11 戏曲", "info": "原著第10届茅盾文学奖（徐则臣）\n9/11（周五）CCTV-11 播出", "newToday": true },
-    { "name": "人世间", "channel": "CCTV-8 电视剧", "info": "豆瓣8.4；白玉兰2022最佳；原著第10届茅盾文学奖\n9/5-9/11 每天凌晨4集连播，共28场", "newToday": false },
-    { "name": "藏海传", "channel": "CCTV-12 社会与法", "info": "豆瓣7.1；2025年央视大剧\n9/5-9/11 午间+晚间各3集，共42场", "newToday": false },
-    { "name": "家业", "channel": "CCTV-1 综合", "info": "豆瓣7.3；2026年央视大剧\n9/7-9/11 上午档，共13场", "newToday": false },
-    { "name": "父母爱情", "channel": "河北卫视/湖北卫视", "info": "飞天奖2015现实题材优秀电视剧；豆瓣9.5\n9/7-9/11 共38场", "newToday": false },
+    { "name": "人世间", "channel": "CCTV-8 电视剧", "info": "豆瓣8.4；白玉兰2022最佳；原著茅盾文学奖\n9/6-9/12 每天凌晨4集连播，共27场", "newToday": false },
+    { "name": "藏海传", "channel": "CCTV-12 社会与法", "info": "豆瓣7.1；2025年央视大剧\n9/6-9/12 午间+晚间各3集，共42场", "newToday": false },
+    { "name": "家业", "channel": "CCTV-1 综合", "info": "豆瓣7.3；2026年央视大剧\n9/7-9/12 上午档，共16场", "newToday": false },
+    { "name": "父母爱情", "channel": "湖北卫视/河北卫视", "info": "飞天奖2015现实题材优秀电视剧；豆瓣9.5\n9/7-9/12 共47场", "newToday": false },
     { "name": "外交风云", "channel": "山东卫视/深圳卫视", "info": "2019年献礼剧\n9/10、9/11 各播1场", "newToday": false },
-    { "name": "天行健", "channel": "厦门卫视", "info": "豆瓣8.8\n9/5-9/11 下午档每天2-3集，共7场", "newToday": false }
+    { "name": "天行健", "channel": "厦门卫视", "info": "豆瓣8.8\n9/6-9/12 下午档每天2-3集，共7场", "newToday": false },
+    { "name": "北上", "channel": "CCTV-11 戏曲", "info": "原著茅盾文学奖（徐则臣）\n9/11、9/12 CCTV-11播出", "newToday": false },
+    { "name": "欢乐家长群2", "channel": "江苏IPTV 限免", "info": "豆瓣7.4\n9/9 起限免", "newToday": true },
+    { "name": "铁血淞沪", "channel": "江苏IPTV 限免", "info": "豆瓣7.5\n9/9 起限免", "newToday": true }
   ]
 }
