@@ -54,6 +54,7 @@
     .card-new{border:2px solid var(--red);}
     .card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
     .card-name{font-size:16px;font-weight:600;}
+    .card-channel{font-size:13px;color:#B71C1C;margin:2px 0 4px;}
     .badge-new{
       background:var(--red);color:#fff;font-size:11px;font-weight:700;
       border-radius:9px;padding:2px 8px;white-space:nowrap;
@@ -135,7 +136,7 @@
         ],
         "itvMovies": [
           { "name": "熊出没·年年有熊", "channel": "江苏IPTV 限免", "info": "票房 10.7亿\n9/9 起限免", "newToday": false },
-          { "name": "死神来了：血脉诅咒", "channel": "海南电信IPT 限免", "info": "2025-08-22内地公映，票房 2.03亿\n9/9 起限免", "newToday": false }
+          { "name": "死神来了：血脉诅咒", "channel": "海南电信IPTV 限免", "info": "2025-08-22内地公映，票房 2.03亿\n9/9 起限免", "newToday": false }
         ],
         "dramas": [
           { "name": "济公游记", "channel": "河南卫视", "info": "豆瓣9.0\n9/15 首播，当天连播5集", "newToday": true },
@@ -208,10 +209,12 @@
       function cardHTML(item, isNewSection) {
         var badge = item.newToday ? '<span class="badge-new">今日新增</span>' : '';
         var cls = isNewSection ? 'card card-new' : 'card';
+        var channel = item.channel ? '<div class="card-channel">' + escapeHtml(item.channel) + '</div>' : '';
         return '<div class="' + cls + '" onclick="Qingquan.openDetail(\'' +
           encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
           encodeURIComponent(item.info || '') + '\')">' +
           '<div class="card-head"><span class="card-name">' + escapeHtml(item.name) + '</span>' + badge + '</div>' +
+          channel +
           '<div class="card-body">' + escapeHtml(item.info) + '</div>' +
           '<div class="card-hint">点击查看详情</div>' +
           '</div>';
