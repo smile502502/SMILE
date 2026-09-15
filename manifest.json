@@ -1,0 +1,25 @@
+{
+  "name": "清泉看大片",
+  "short_name": "清泉看大片",
+  "description": "每日免费影视推荐：央视、卫视、电信ITV免费大片与高分剧集。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F7F5F1",
+  "theme_color": "#455A64",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
