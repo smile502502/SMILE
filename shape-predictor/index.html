@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#0f1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="身形预测">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" type="image/png" href="./icon-192.png">
+<title>身形预测规划器 v1.0</title>
+<style>
+  :root{
+    --bg:#0f1117; --card:#1a1e29; --card2:#20263a; --line:#2c3350;
+    --text:#e8ecf6; --muted:#9aa4c2; --accent:#4f8cff; --accent2:#22c55e;
+    --danger:#ef4444; --pink:#ec4899;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:"Microsoft YaHei","PingFang SC",sans-serif; padding:16px; line-height:1.6;}
+  h1{font-size:22px; margin-bottom:4px;}
+  h2{font-size:16px; margin-bottom:12px;}
+  h3{font-size:14px; margin-bottom:8px; color:var(--accent);}
+  .sub{color:var(--muted); font-size:12px; margin-bottom:20px;}
+  .app{max-width:1100px; margin:0 auto;}
+  .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; position:sticky; top:0; background:var(--bg); padding:8px 0; z-index:10;}
+  .tab{padding:8px 18px; border-radius:8px; cursor:pointer; background:var(--card); border:1px solid var(--line); color:var(--muted); font-size:14px; user-select:none;}
+  .tab.active{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .panel{display:none;}
+  .panel.active{display:block; animation:fade .2s;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px;}
+  .grid{display:grid; gap:12px;}
+  .g2{grid-template-columns:1fr 1fr;} .g3{grid-template-columns:1fr 1fr 1fr;}
+  .g4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:720px){.g2,.g3,.g4{grid-template-columns:1fr;}}
+  label{display:block; font-size:12px; color:var(--muted); margin-bottom:4px;}
+  input,select,textarea{width:100%; background:var(--card2); border:1px solid var(--line); color:var(--text); border-radius:8px; padding:8px 10px; font-size:14px; outline:none;}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+  input[type=date]{color-scheme:dark;}
+  input[type=file]{font-size:12px; padding:6px;}
+  button{cursor:pointer; border:none; border-radius:8px; padding:8px 16px; font-size:14px; background:var(--accent); color:#fff; transition:.15s;}
+  button:hover{filter:brightness(1.15);}
+  button.secondary{background:var(--card2); border:1px solid var(--line); color:var(--text);}
+  button.danger{background:var(--danger);}
+  button.small{padding:4px 10px; font-size:12px;}
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .toolbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .stat{background:var(--card2); border-radius:10px; padding:12px; border:1px solid var(--line);}
+  .stat .k{font-size:12px; color:var(--muted);}
+  .stat .v{font-size:22px; font-weight:700; margin-top:2px;}
+  .stat .d{font-size:12px; color:var(--muted); margin-top:2px;}
+  .scenario{background:var(--card2); border-radius:10px; padding:12px; border:1px solid var(--line); border-left:4px solid var(--line);}
+  .scenario.cons{border-left-color:#6b7280;}
+  .scenario.norm{border-left-color:var(--accent);}
+  .scenario.super{border-left-color:var(--accent2);}
+  .scenario .k{font-size:12px; color:var(--muted);}
+  .scenario .v{font-size:16px; font-weight:700; margin-top:4px; line-height:1.6;}
+  .scenario .d{font-size:11px; color:var(--muted); margin-top:4px; line-height:1.5;}
+  .badge{display:inline-block; padding:1px 8px; border-radius:20px; font-size:11px; background:var(--card2); border:1px solid var(--line); color:var(--muted);}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th,td{padding:7px 10px; border-bottom:1px solid var(--line); text-align:left; white-space:nowrap;}
+  th{color:var(--muted); font-weight:400; font-size:12px;}
+  td.num{text-align:right; font-variant-numeric:tabular-nums;}
+  .positive{color:var(--accent2);} .negative{color:var(--danger);}
+  canvas{width:100%; background:var(--card); border-radius:12px; border:1px solid var(--line); display:block;}
+  .hint{font-size:12px; color:var(--muted); margin-top:8px;}
+  .mt1{margin-top:12px;}
+  .photo-note{font-size:11px; color:var(--muted);}
+  .empty{color:var(--muted); font-size:13px; padding:20px; text-align:center;}
+  .rec-photo{max-width:56px; max-height:56px; border-radius:6px; object-fit:cover; border:1px solid var(--line); cursor:zoom-in; vertical-align:middle;}
+  .delBtn{cursor:pointer; color:var(--danger); background:none; border:none; font-size:12px; padding:2px 4px;}
+  #lightbox{position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:999; cursor:zoom-out;}
+  #lightbox img{max-width:92vw; max-height:92vh; border-radius:8px;}
+  .w150{width:150px;} .w110{width:110px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>身形预测规划器</h1>
+  <div class="sub">按当前体型估算体脂率，依据训练与饮食计划，预测未来任意日期的体脂率 · 肌肉量 · 体重（保守/正常/超预期三情景对照）；每日打卡记录训练与饮食、锻炼前后照片，预测随真实记录持续校正。</div>
+
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-panel="p-set">① 当前数据</div>
+    <div class="tab" data-panel="p-plan">② 训练与饮食计划</div>
+    <div class="tab" data-panel="p-predict">③ 预测结果</div>
+    <div class="tab" data-panel="p-track">④ 每日记录</div>
+    <div class="tab" data-panel="p-trend">⑤ 趋势图表</div>
+  </div>
+
+  <!-- ① 当前数据 -->
+  <div class="panel active" id="p-set">
+    <div class="card">
+      <h2>当前身体数据</h2>
+      <div class="grid g3">
+        <div><label>性别</label>
+          <select id="gender"><option value="male">男</option><option value="female">女</option></select>
+        </div>
+        <div><label>年龄（岁）</label><input type="number" id="age" value="30" min="14" max="80"></div>
+        <div><label>身高（cm）</label><input type="number" id="height" value="175" min="130" max="230"></div>
+        <div><label>体重（kg）</label><input type="number" id="weight" value="75" min="30" max="250" step="0.1"></div>
+        <div><label>腰围（cm，绕肚脐水平）</label><input type="number" id="waist" value="85" min="40" max="200" step="0.1"></div>
+        <div><label>颈围（cm，喉结下方）</label><input type="number" id="neck" value="38" min="25" max="70" step="0.1"></div>
+      </div>
+      <div id="femaleWrap" style="display:none; margin-top:10px;">
+        <label>臀围（cm，女性必填）</label>
+        <input type="number" id="hip" value="95" min="60" max="180" step="0.1" style="max-width:200px;">
+      </div>
+      <div class="row mt1">
+        <button id="btnCalcBody">计算体脂率并保存</button>
+        <span class="hint" style="margin:0;">计算后请继续填写 ② 训练与饮食计划</span>
+      </div>
+    </div>
+
+    <div class="card" id="bodyResult" style="display:none;">
+      <h3>当前身体成分估算</h3>
+      <div class="grid g4">
+        <div class="stat"><div class="k">估算体脂率</div><div class="v" id="rBf">--</div><div class="d">美军海军公式</div></div>
+        <div class="stat"><div class="k">脂肪量</div><div class="v" id="rFat">--</div><div class="d">kg</div></div>
+        <div class="stat"><div class="k">瘦体重 LBM</div><div class="v" id="rLbm">--</div><div class="d">kg（含肌肉/骨骼/水分）</div></div>
+        <div class="stat"><div class="k">估算肌肉量</div><div class="v" id="rMuscle">--</div><div class="d">LBM × 0.55 参考</div></div>
+      </div>
+      <div class="grid g3 mt1">
+        <div class="stat"><div class="k">BMR 基础代谢</div><div class="v" id="rBmr">--</div><div class="d">kcal/天（Mifflin-St Jeor）</div></div>
+        <div class="stat"><div class="k">TDEE 每日消耗</div><div class="v" id="rTdee">--</div><div class="d">kcal/天（活动系数1.375+训练）</div></div>
+        <div class="stat"><div class="k">BMI</div><div class="v" id="rBmi">--</div><div class="d">kg/m²</div></div>
+      </div>
+      <div class="hint">估算肌肉量 = 瘦体重 × 0.55 为经验参考值，实际因人而异；围度数据越准，体脂估算越可靠。</div>
+    </div>
+  </div>
+
+  <!-- ② 训练与饮食计划 -->
+  <div class="panel" id="p-plan">
+    <div class="card">
+      <h3>目标设定</h3>
+      <div class="grid g3">
+        <div><label>目标类型</label>
+          <select id="goalType">
+            <option value="cut">减脂（热量缺口，尽量保肌）</option>
+            <option value="bulk">增肌（热量盈余，干净增重）</option>
+            <option value="recomp">保持体重·身体重组（增肌减脂并行）</option>
+          </select>
+        </div>
+        <div><label>目标体脂率（%）</label><input type="number" id="goalBf" value="15" min="4" max="50" step="0.5"></div>
+        <div><label>目标达成日期</label><input type="date" id="goalDate"></div>
+      </div>
+      <div class="hint">预测从「今天/最近一次记录」按日推进到「目标日期」。减脂目标 = 想达到的体脂下限；增肌目标 = 允许的最高体脂上限。</div>
+    </div>
+
+    <div class="card">
+      <h3>训练计划（周）</h3>
+      <div class="grid g4">
+        <div><label>每周力量训练次数</label><input type="number" id="trainFreq" value="4" min="0" max="7"></div>
+        <div><label>每次时长（分钟）</label><input type="number" id="trainMin" value="60" min="0" max="300"></div>
+        <div><label>每周有氧次数</label><input type="number" id="cardioFreq" value="3" min="0" max="14"></div>
+        <div><label>每次有氧时长（分钟）</label><input type="number" id="cardioMin" value="30" min="0" max="300"></div>
+      </div>
+      <div class="hint">力量训练按约 6 kcal/分钟、有氧约 8 kcal/分钟估算额外消耗，计入每日总消耗。</div>
+    </div>
+
+    <div class="card">
+      <h3>饮食计划（每日）</h3>
+      <div class="grid g3">
+        <div><label>每日热量目标（kcal）</label><input type="number" id="calTarget" value="2000" step="50"></div>
+        <div><label>蛋白质（g）</label><input type="number" id="proteinG" value="120" step="5"></div>
+        <div><label>训练日碳水化合物（g）</label><input type="number" id="carbG" value="200" step="10"></div>
+      </div>
+      <div class="hint">脂肪克数由剩余热量自动推算（1g 蛋白/碳水 = 4kcal，1g 脂肪 = 9kcal）：约 <span id="fatGrams">--</span> g。</div>
+      <div class="hint" id="calAdvice" style="color:var(--accent);"></div>
+    </div>
+
+    <div class="card">
+      <h3>情景参数（可选调整）</h3>
+      <div class="grid g3">
+        <div><label>保守 进度倍率</label><input type="number" id="kCons" value="0.6" step="0.05" min="0.1" max="2"></div>
+        <div><label>正常 进度倍率</label><input type="number" id="kNorm" value="1.0" step="0.05" min="0.1" max="2"></div>
+        <div><label>超预期 进度倍率</label><input type="number" id="kSuper" value="1.4" step="0.05" min="0.1" max="3"></div>
+      </div>
+      <div class="hint">肌肉每月合成上限（参考）：增肌期 正常 男0.45kg / 女0.25kg，超预期 男0.7kg / 女0.4kg，保守减半；减脂期保肌损失上限约 男0.3kg / 女0.2kg 每月。</div>
+    </div>
+
+    <div class="row mt1">
+      <button id="btnCalcPlan">保存计划并生成预测</button>
+      <button class="secondary" id="btnReset">重置所有数据</button>
+    </div>
+  </div>
+
+  <!-- ③ 预测结果 -->
+  <div class="panel" id="p-predict">
+    <div class="card">
+      <h3>目标时间点预测</h3>
+      <div class="toolbar">
+        <label class="mr">预测日期</label>
+        <input type="date" id="predictDate" class="w150">
+        <label class="mr">状态</label>
+        <select id="predictState" class="w110">
+          <option value="daily">日常（晨起空腹）</option>
+          <option value="pump">训练充血后</option>
+        </select>
+        <button id="btnPredict">生成预测</button>
+      </div>
+      <div class="hint">「训练充血后」叠加充血加成：肌肉量 +1~3%、体脂率 -0.2~0.6 个百分点（情景越高加成越多）。</div>
+    </div>
+
+    <div id="predictWrap" style="display:none;">
+      <div class="grid g3" id="scenarios"></div>
+      <div class="card mt1">
+        <h3>该日详细数据</h3>
+        <div id="detailTable"></div>
+      </div>
+      <div class="hint">以上为模型推算值，供规划参考；实际以每日记录为准，记录越多预测越贴近真实。</div>
+    </div>
+  </div>
+
+  <!-- ④ 每日记录 -->
+  <div class="panel" id="p-track">
+    <div class="card">
+      <h3>新增每日记录</h3>
+      <div class="grid g4">
+        <div><label>日期</label><input type="date" id="recDate"></div>
+        <div><label>体重（kg）</label><input type="number" id="recWeight" step="0.1"></div>
+        <div><label>体脂率（%，可空）</label><input type="number" id="recBf" step="0.1"></div>
+        <div><label>腰围（cm，可空）</label><input type="number" id="recWaist" step="0.1"></div>
+      </div>
+      <div class="grid g3 mt1">
+        <div><label>今天是否训练</label>
+          <select id="recTrained"><option value="yes">是</option><option value="no">否</option></select>
+        </div>
+        <div><label>训练类型</label>
+          <select id="recType"><option value="strength">力量</option><option value="cardio">有氧</option><option value="mix">混合</option></select>
+        </div>
+        <div><label>实际饮食达成度（%）</label><input type="number" id="recAdherence" value="100" min="0" max="200" step="5"></div>
+      </div>
+      <div class="grid g2 mt1">
+        <div><label>训练前照片（锻炼前）</label><input type="file" id="recPhotoBefore" accept="image/*"></div>
+        <div><label>训练后照片（锻炼后）</label><input type="file" id="recPhotoAfter" accept="image/*"></div>
+      </div>
+      <div class="grid g2 mt1">
+        <div><label>训练备注</label><textarea id="recNote" rows="2" placeholder="如：深蹲 5×5，状态很好"></textarea></div>
+        <div><label>饮食备注</label><textarea id="recDietNote" rows="2" placeholder="如：超计划200kcal，蛋白达标"></textarea></div>
+      </div>
+      <div class="row mt1">
+        <button id="btnAddRec">保存记录</button>
+        <button class="secondary" id="btnClearPhotos">清除已选照片</button>
+      </div>
+      <div class="photo-note mt1">照片仅保存在本机浏览器数据中，不上传任何服务器；存储额度不足时优先删除最早照片（每张压缩为缩略图，约几十 KB）。</div>
+    </div>
+
+    <div class="card">
+      <h3>历史记录 <span id="recCount" class="badge">0 条</span></h3>
+      <div style="overflow-x:auto;" id="recTableWrap"><div class="empty">暂无记录，先添加一条吧。</div></div>
+      <div class="row mt1">
+        <button class="secondary" id="btnExportCsv">导出记录 CSV</button>
+        <button class="secondary" id="btnExportData">导出全部数据 JSON（含照片）</button>
+        <button class="secondary" id="btnImportData">导入备份 JSON</button>
+        <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ 趋势图表 -->
+  <div class="panel" id="p-trend">
+    <div class="card">
+      <div class="toolbar">
+        <h2 style="margin:0;">趋势图（三情景 vs 实际记录）</h2>
+        <label class="mr">预测跨度（天）</label>
+        <input type="number" id="trendDays" value="90" min="7" max="1095" class="w110">
+        <button id="btnRenderTrend">重新绘制</button>
+      </div>
+      <div class="grid g2 mt1">
+        <div><label>体脂率 %</label><canvas id="cvBf" height="260"></canvas></div>
+        <div><label>体重 kg</label><canvas id="cvW" height="260"></canvas></div>
+      </div>
+      <div class="grid g2 mt1">
+        <div><label>肌肉量 kg（估算）</label><canvas id="cvM" height="260"></canvas></div>
+        <div><label>脂肪量 kg</label><canvas id="cvF" height="260"></canvas></div>
+      </div>
+      <div class="hint">红 = 保守，蓝 = 正常，绿 = 超预期；白色圆点 = 每日实际记录。预测从最近一次记录自动校正起点。</div>
+    </div>
+  </div>
+</div>
+
+<div id="lightbox"><img id="lightboxImg" alt=""></div>
+
+<script>
+"use strict";
+/* ================= 工具 ================= */
+const LS_KEY='shapePredictorV1';
+let state=null;
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const round1=v=>Math.round(v*10)/10;
+const round2=v=>Math.round(v*100)/100;
+const pad2=n=>String(n).padStart(2,'0');
+const fmtDate=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const addDays=(d,n)=>{const x=new Date(d); x.setDate(x.getDate()+n); return x;};
+const todayStr=()=>fmtDate(new Date());
+const toDate=s=>new Date(s+'T00:00:00');
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const download=(name,content,mime)=>{
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type:mime||'text/plain;charset=utf-8'}));
+  a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+};
+
+/* ================= 状态 ================= */
+function defaultState(){
+  const today=new Date();
+  return {
+    version:1, created:new Date().toISOString(),
+    profile:{gender:'male',age:30,height:175,weight:75,waist:85,neck:38,hip:95},
+    bodyResult:null,
+    goal:{type:'cut',bf:15,date:fmtDate(addDays(today,120))},
+    plan:{trainFreq:4,trainMin:60,cardioFreq:3,cardioMin:30,cal:2000,protein:120,carb:200},
+    scenarios:{cons:0.6,norm:1.0,super:1.4},
+    records:[], photos:{},
+    predictDate:fmtDate(addDays(today,90)), predictState:'daily'
+  };
+}
+function save(){
+  try{ localStorage.setItem(LS_KEY,JSON.stringify(state)); }
+  catch(e){ trimPhotos(); try{ localStorage.setItem(LS_KEY,JSON.stringify(state)); }catch(e2){ alert('本地存储空间不足，已尽力清理仍失败，请导出备份后重置。'); } }
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    state=raw? JSON.parse(raw) : defaultState();
+  }catch(e){ state=defaultState(); }
+  if(!state.profile){ state.profile=defaultState().profile; }
+  else if(state.profile.heightCm && !state.profile.height){ state.profile.height=state.profile.heightCm; delete state.profile.heightCm; }
+  if(!state.goal) state.goal=defaultState().goal;
+  if(!state.plan) state.plan=defaultState().plan;
+  if(!state.scenarios) state.scenarios=defaultState().scenarios;
+  if(!state.records) state.records=[];
+  if(!state.photos) state.photos={};
+  if(!state.predictDate) state.predictDate=defaultState().predictDate;
+  if(!state.predictState) state.predictState='daily';
+}
+function trimPhotos(){
+  const keys=Object.keys(state.photos||{}).sort();
+  let freed=0;
+  for(const k of keys){ if(freed>=3) break; delete state.photos[k]; freed++; }
+}
+
+/* ================= 体成分模型 ================= */
+function navyBF(g,h,waist,neck,hip){
+  if(g==='male'){
+    if(waist<=neck||h<=0) return null;
+    return clamp(495/(1.0324-0.19077*Math.log10(waist-neck)+0.15456*Math.log10(h))-450,3,60);
+  }else{
+    if(!hip||(waist+hip)<=neck||h<=0) return null;
+    return clamp(495/(1.29579-0.35004*Math.log10(waist+hip-neck)+0.22100*Math.log10(h))-450,8,60);
+  }
+}
+function bmrCal(g,w,h,a){
+  return g==='male'? 10*w+6.25*h-5*a+5 : 10*w+6.25*h-5*a-161;
+}
+
+/* ================= 预测引擎 ================= */
+function getDailyEx(){
+  const plan=state.plan;
+  return (plan.trainFreq*plan.trainMin*6 + plan.cardioFreq*plan.cardioMin*8)/7;
+}
+function getProteinRatio(w){
+  const p=state.profile, plan=state.plan;
+  return clamp(plan.protein/((p.gender==='male'?1.8:1.5)*w),0.5,1.5);
+}
+
+/* 逐日模拟到目标日期，key 为情景 cons/norm/super */
+function simulate(key){
+  const p=state.profile, goal=state.goal, plan=state.plan, sc=state.scenarios;
+  const rate=sc[key];
+  const recs=state.records.slice().sort((a,b)=>a.date<b.date?-1:1);
+  let startDate, w0, bf0;
+  if(recs.length){
+    const last=recs[recs.length-1];
+    startDate=last.date;
+    w0=last.weight;
+    if(last.bf!=null&&last.bf>0){ bf0=last.bf; }
+    else if(state.bodyResult){
+      const base=state.bodyResult;
+      bf0=clamp(base.bf+(w0-base.weight)*0.25,3,60);
+    } else { bf0=20; }
+  }else{
+    const base=state.bodyResult;
+    startDate=todayStr();
+    w0=p.weight;
+    bf0=base? base.bf : 20;
+  }
+  const h=p.height, sex=p.gender;
+  const endDate=toDate(goal.date);
+  const startT=toDate(startDate);
+  const totalDays=Math.max(1,Math.round((endDate-startT)/864e5));
+
+  /* 记录实际达成度修正：近7天平均 adherence（%），影响缺口 */
+  const recent=recs.slice(-7);
+  let adherence=1;
+  if(recent.length){
+    const sum=recent.reduce((s,r)=>s+(r.adherence!=null?r.adherence:100),0);
+    adherence=clamp(sum/recent.length/100,0.3,2);
+  }
+
+  let w=w0, bf=bf0;
+  let lbm=w*(1-bf/100);
+  let fat=w-lbm;
+  const series=[{date:startDate,w:round1(w),bf:round2(bf),muscle:round1(lbm*0.55),fat:round1(fat)}];
+
+  /* 肌肉月上限 */
+  const capBase= sex==='male'? {cons:0.225,norm:0.45,super:0.7} : {cons:0.125,norm:0.25,super:0.4};
+  const capMonth=capBase[key];
+  const capLoss= sex==='male'? 0.3 : 0.2;
+
+  for(let d=1;d<=totalDays;d++){
+    const bmr=bmrCal(sex,w,h,p.age);
+    const tdee=bmr*1.375+getDailyEx();
+    const gap=(tdee-plan.cal)*adherence; // >0 缺口
+    let dMuscle=0, dFat=0;
+    if(goal.type==='cut'){
+      if(bf<=goal.bf){ dMuscle=0; dFat=0; }
+      else{
+        const eff=Math.max(0,gap)*rate;
+        const loss=eff/7700;
+        dFat=-loss*0.85;
+        const muscLoss=loss*0.15*(2-getProteinRatio(w));
+        dMuscle=-Math.min(Math.max(0,muscLoss),capLoss/30);
+      }
+    } else if(goal.type==='bulk'){
+      if(bf>=goal.bf){ dMuscle=0; dFat=0; }
+      else{
+        const eff=Math.max(0,-gap)*rate;
+        const gain=eff/7700;
+        const leanFrac=0.35+(plan.trainFreq>0?0.2:0);
+        dMuscle=Math.min(gain*leanFrac,capMonth/30);
+        dFat=gain*(1-leanFrac);
+      }
+    } else { /* recomp */
+      const surplus=Math.max(0,-gap)*rate;
+      const def=Math.max(0,gap)*rate;
+      dMuscle=Math.min((capMonth/30)*0.7*rate+surplus/7700*0.3,(capMonth/30)*0.8);
+      dFat=-Math.min(def/7700*0.5,Math.max(0,dMuscle)*1.5);
+    }
+    lbm+=dMuscle; fat+=dFat;
+    w=lbm+fat;
+    if(w<20) w=20;
+    bf=clamp(fat/w*100,3,60);
+    series.push({date:fmtDate(addDays(startT,d)),w:round1(w),bf:round2(bf),muscle:round1(lbm*0.55),fat:round1(fat)});
+  }
+  return series;
+}
+function bmrFor(w,h,a){
+  const p=state.profile;
+  return bmrCal(p.gender,w,h,a);
+}
+
+function buildSeries(){
+  const sc=state.scenarios;
+  return {cons:simulate('cons'),norm:simulate('norm'),super:simulate('super')};
+}
+function seriesAt(series,dateStr){
+  let best=series[0];
+  for(const pt of series){ if(pt.date<=dateStr) best=pt; else break; }
+  return best;
+}
+function pumpMod(key,pt){
+  const mult={cons:1.01,norm:1.02,super:1.03}[key]||1.02;
+  const shift={cons:0.2,norm:0.4,super:0.6}[key]||0.4;
+  return {w:pt.w,bf:round2(Math.max(3,pt.bf-shift)),muscle:round1(pt.muscle*mult),fat:round1(pt.fat)};
+}
+
+/* ================= 页面渲染 ================= */
+function fillProfileForm(){
+  const pr=state.profile;
+  $('gender').value=pr.gender||'male';
+  $('age').value=pr.age||30;
+  $('height').value=pr.height||175;
+  $('weight').value=pr.weight||75;
+  $('waist').value=pr.waist||85;
+  $('neck').value=pr.neck||38;
+  $('hip').value=pr.hip||95;
+  $('femaleWrap').style.display=(pr.gender==='female')?'block':'none';
+  if(state.bodyResult) renderBody(state.bodyResult);
+}
+function fillPlanForm(){
+  const g=state.goal, plan=state.plan, sc=state.scenarios;
+  $('goalType').value=g.type||'cut';
+  $('goalBf').value=g.bf||15;
+  $('goalDate').value=g.date||fmtDate(addDays(new Date(),120));
+  $('trainFreq').value=plan.trainFreq||4;
+  $('trainMin').value=plan.trainMin||60;
+  $('cardioFreq').value=plan.cardioFreq||3;
+  $('cardioMin').value=plan.cardioMin||30;
+  $('calTarget').value=plan.cal||2000;
+  $('proteinG').value=plan.protein||120;
+  $('carbG').value=plan.carb||200;
+  $('kCons').value=sc.cons||0.6;
+  $('kNorm').value=sc.norm||1.0;
+  $('kSuper').value=sc.super||1.4;
+  updateFatGrams();
+  updateCalAdvice();
+}
+function updateFatGrams(){
+  const cal=+$('calTarget').value||2000, pro=+$('proteinG').value||0, carb=+$('carbG').value||0;
+  const fat=Math.max(0,(cal-pro*4-carb*4)/9);
+  $('fatGrams').textContent=Math.round(fat);
+  updateCalAdvice();
+}
+/* 根据目标类型给热量建议 */
+function currentTdee(){
+  const pr=state.profile;
+  const w=+$('weight').value||pr.weight||75, h=+$('height').value||pr.height||175, a=+$('age').value||pr.age||30;
+  const g=pr.gender||'male';
+  const bmr=bmrCal(g,w,h,a);
+  return bmr*1.375+getDailyEx();
+}
+function updateCalAdvice(){
+  const tdee=currentTdee();
+  const type=$('goalType').value;
+  let rec;
+  if(type==='cut') rec=Math.round(tdee-450);
+  else if(type==='bulk') rec=Math.round(tdee+300);
+  else rec=Math.round(tdee);
+  $('calAdvice').textContent='当前 TDEE 约 '+Math.round(tdee)+' kcal/天，按「'+$('goalType').options[$('goalType').selectedIndex].text.replace(/（.*/,'')+'」建议每日热量约 '+rec+' kcal（您当前填 '+Math.round(+$('calTarget').value||0)+' kcal）。';
+}
+function readPlanForm(){
+  state.goal={type:$('goalType').value,bf:+$('goalBf').value,date:$('goalDate').value};
+  state.plan={trainFreq:+$('trainFreq').value,trainMin:+$('trainMin').value,cardioFreq:+$('cardioFreq').value,cardioMin:+$('cardioMin').value,cal:+$('calTarget').value,protein:+$('proteinG').value,carb:+$('carbG').value};
+  state.scenarios={cons:+$('kCons').value,norm:+$('kNorm').value,super:+$('kSuper').value};
+  save();
+}
+function renderBody(res){
+  $('bodyResult').style.display='block';
+  $('rBf').textContent=res.bf+'%';
+  $('rFat').textContent=res.fatKg+' kg';
+  $('rLbm').textContent=res.lbm+' kg';
+  $('rMuscle').textContent=res.muscle+' kg';
+  $('rBmr').textContent=res.bmr+' kcal';
+  $('rTdee').textContent=res.tdee+' kcal';
+  $('rBmi').textContent=res.bmi;
+}
+
+/* ================= 事件绑定 ================= */
+function bindEvents(){
+  /* tabs */
+  document.querySelectorAll('#tabs .tab').forEach(t=>t.addEventListener('click',()=>{
+    document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.toggle('active',x===t));
+    ['p-set','p-plan','p-predict','p-track','p-trend'].forEach(id=>{
+      $(id).classList.toggle('active',id===t.dataset.panel);
+    });
+  }));
+
+  $('gender').addEventListener('change',()=>{ $('femaleWrap').style.display=($('gender').value==='female')?'block':'none'; updateCalAdvice(); });
+  $('age').addEventListener('input',updateCalAdvice);
+  $('height').addEventListener('input',updateCalAdvice);
+  $('weight').addEventListener('input',updateCalAdvice);
+  $('goalType').addEventListener('change',updateCalAdvice);
+
+  /* ① 计算体脂 */
+  $('btnCalcBody').addEventListener('click',()=>{
+    const g=$('gender').value, age=+$('age').value, h=+$('height').value, w=+$('weight').value;
+    const waist=+$('waist').value, neck=+$('neck').value, hip=+$('hip').value;
+    if(![h,w,waist,neck].every(Number.isFinite)||h<=0||w<=0||waist<=0||neck<=0){ alert('请填写完整的身高、体重、腰围、颈围（女性还需臀围）。'); return; }
+    const bf=navyBF(g,h,waist,neck,hip);
+    if(bf==null){ alert('围度数据不合理：腰围应大于颈围，请重新测量后填写。'); return; }
+    const fatKg=w*bf/100, lbm=w-fatKg, muscle=lbm*0.55;
+    const bmr=bmrCal(g,w,h,age), tdee=Math.round(bmr*1.375+getDailyEx());
+    const bmi=w/((h/100)*(h/100));
+    state.bodyResult={gender:g,height:h,weight:w,bf:round2(bf),fatKg:round1(fatKg),lbm:round1(lbm),muscle:round1(muscle),bmr:Math.round(bmr),tdee:tdee,bmi:round1(bmi),date:new Date().toISOString()};
+    state.profile={gender:g,age:age,height:h,weight:w,waist:waist,neck:neck,hip:hip};
+    save();
+    renderBody(state.bodyResult);
+    fillPlanForm();
+  });
+
+  /* ② 计划 */
+  $('calTarget').addEventListener('input',updateFatGrams);
+  $('proteinG').addEventListener('input',updateFatGrams);
+  $('carbG').addEventListener('input',updateFatGrams);
+  $('btnCalcPlan').addEventListener('click',()=>{
+    readBodyPlan();
+    readPlanForm();
+    $('predictDate').value=state.goal.date;
+    renderPredict();
+    // 切到预测页
+    switchTab('p-predict');
+  });
+  $('btnReset').addEventListener('click',()=>{
+    if(!confirm('确定要重置所有数据吗？本地记录、照片、计划都将清除（建议先导出备份）。')) return;
+    state=defaultState();
+    save();
+    location.reload();
+  });
+
+  /* ③ 预测 */
+  $('btnPredict').addEventListener('click',()=>{
+    readPlanForm();
+    renderPredict();
+  });
+
+  /* ④ 记录 */
+  $('btnAddRec').addEventListener('click',addRecord);
+  $('btnClearPhotos').addEventListener('click',()=>{
+    $('recPhotoBefore').value='';
+    $('recPhotoAfter').value='';
+  });
+  $('btnExportCsv').addEventListener('click',exportCsv);
+  $('btnExportData').addEventListener('click',()=>{
+    download('身形预测数据备份_'+todayStr()+'.json',JSON.stringify(state,null,2),'application/json');
+  });
+  $('btnImportData').addEventListener('click',()=>$('importFile').click());
+  $('importFile').addEventListener('change',e=>{
+    const f=e.target.files[0];
+    if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      try{
+        const data=JSON.parse(rd.result);
+        state=data;
+        if(!state.records) state.records=[];
+        if(!state.photos) state.photos={};
+        save();
+        fillAll();
+        renderRecords();
+        alert('导入成功。');
+      }catch(err){ alert('导入失败：文件格式不正确。'); }
+    };
+    rd.readAsText(f);
+    e.target.value='';
+  });
+
+  /* ⑤ 趋势 */
+  $('btnRenderTrend').addEventListener('click',()=>{ readPlanForm(); renderTrend(); });
+
+  /* 灯箱 */
+  $('lightbox').addEventListener('click',()=>{ $('lightbox').style.display='none'; });
+}
+function switchTab(name){
+  document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.toggle('active',x.dataset.panel===name));
+  ['p-set','p-plan','p-predict','p-track','p-trend'].forEach(id=>$(id).classList.toggle('active',id===name));
+}
+function readBodyPlan(){
+  const g=$('gender').value, age=+$('age').value, h=+$('height').value, w=+$('weight').value;
+  state.profile={gender:g,age:age,height:h,weight:w,waist:+$('waist').value,neck:+$('neck').value,hip:+$('hip').value};
+}
+function readPlanForm(){
+  state.goal={type:$('goalType').value,bf:+$('goalBf').value,date:$('goalDate').value};
+  state.plan={trainFreq:+$('trainFreq').value,trainMin:+$('trainMin').value,cardioFreq:+$('cardioFreq').value,cardioMin:+$('cardioMin').value,cal:+$('calTarget').value,protein:+$('proteinG').value,carb:+$('carbG').value};
+  state.scenarios={cons:+$('kCons').value,norm:+$('kNorm').value,super:+$('kSuper').value};
+  save();
+}
+
+/* ================= 预测渲染 ================= */
+function renderPredict(){
+  if(!state.bodyResult){ alert('请先在 ① 当前数据 计算体脂率。'); return; }
+  const dateStr=$('predictDate').value||state.goal.date;
+  const isPump=$('predictState').value==='pump';
+  const series=buildSeries();
+  const keys=['cons','norm','super'];
+  const labels={cons:'保守',norm:'正常',super:'超预期'};
+  const colors={cons:'#9aa4c2',norm:'#4f8cff',super:'#22c55e'};
+  const html=keys.map(k=>{
+    const pt=seriesAt(series[k],dateStr);
+    const out=isPump? pumpMod(k,pt) : pt;
+    const d1=Math.round((toDate(dateStr)-toDate(series[k][0].date))/864e5);
+    const bfDelta=round2(out.bf-series[k][0].bf);
+    const mDelta=round1(out.muscle-series[k][0].muscle);
+    const wDelta=round1(out.w-series[k][0].w);
+    return `<div class="scenario ${k}">
+      <div class="k">${labels[k]}（倍率×${state.scenarios[k]}）</div>
+      <div class="v">体脂 ${out.bf}%<br>体重 ${out.w} kg<br>肌肉 ${out.muscle} kg</div>
+      <div class="d">距起点 ${d1} 天<br>体脂 ${bfDelta>=0?'+':''}${bfDelta}pp · 肌肉 ${mDelta>=0?'+':''}${mDelta} kg · 体重 ${wDelta>=0?'+':''}${wDelta} kg</div>
+    </div>`;
+  }).join('');
+  $('scenarios').innerHTML=html;
+
+  const table=keys.map(k=>{
+    const pt=seriesAt(series[k],dateStr);
+    const out=isPump? pumpMod(k,pt) : pt;
+    return `<tr><td>${labels[k]}</td><td class="num">${out.bf}%</td><td class="num">${out.w} kg</td><td class="num">${out.muscle} kg</td><td class="num">${out.fat} kg</td></tr>`;
+  }).join('');
+  $('detailTable').innerHTML=`<table><tr><th>情景</th><th>体脂率</th><th>体重</th><th>肌肉量</th><th>脂肪量</th></tr>${table}</table>`;
+  $('predictWrap').style.display='block';
+  $('btnPredict').scrollIntoView({behavior:'smooth',block:'center'});
+}
+/* ================= 记录 ================= */
+function addRecord(){
+  const date=$('recDate').value||todayStr();
+  const weight=+$('recWeight').value;
+  if(!weight||weight<=0){ alert('请填写体重。'); return; }
+  const rec={
+    date,
+    weight,
+    bf: $('recBf').value? +$('recBf').value : null,
+    waist:$('recWaist').value? +$('recWaist').value : null,
+    trained:$('recTrained').value,
+    type:$('recType').value,
+    adherence:+$('recAdherence').value||100,
+    note:$('recNote').value.trim(),
+    dietNote:$('recDietNote').value.trim(),
+    createdAt:new Date().toISOString()
+  };
+  state.records=state.records.filter(r=>r.date!==date);
+  state.records.push(rec);
+  state.records.sort((a,b)=>a.date<b.date?-1:1);
+  /* 照片 */
+  const photos={};
+  const readPhoto=(input,key)=>{
+    const f=input.files&&input.files[0];
+    if(!f) return;
+    const rd=new FileReader();
+    rd.onload=()=>{
+      compressImage(rd.result,300,quota=>{
+        photos[key]=quota;
+        if(photos.before||photos.after) state.photos[date]=photos;
+        save();
+        renderRecords();
+      });
+    };
+    rd.readAsDataURL(f);
+  };
+  readPhoto($('recPhotoBefore'),'before');
+  readPhoto($('recPhotoAfter'),'after');
+  save();
+  renderRecords();
+  $('recDate').value=todayStr();
+  $('recWeight').value='';
+  $('recBf').value='';
+  $('recWaist').value='';
+  $('recNote').value='';
+  $('recDietNote').value='';
+  $('recPhotoBefore').value='';
+  $('recPhotoAfter').value='';
+  alert('已保存 ' + date + ' 的记录');
+}
+function compressImage(dataUrl,opt,cb){
+  const img=new Image();
+  img.onload=()=>{
+    const max=400;
+    let w=img.width,h=img.height;
+    if(w>max){ h=h*max/w; w=max; }
+    const c=document.createElement('canvas');
+    c.width=w; c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    cb(c.toDataURL('image/jpeg',0.72));
+  };
+  img.onerror=()=>cb(dataUrl);
+  img.src=dataUrl;
+}
+function renderRecords(){
+  const recs=state.records.slice().sort((a,b)=>a.date<b.date?-1:1);
+  $('recCount').textContent=recs.length+' 条';
+  const wrap=$('recTableWrap');
+  if(!recs.length){ wrap.innerHTML='<div class="empty">暂无记录，先添加一条吧。</div>'; return; }
+  const rows=recs.map(r=>{
+    const ph=state.photos[r.date]||{};
+    const before=ph.before? `<img class="rec-photo" src="${ph.before}" onclick="openLightbox('${r.date}','before')" title="训练前">` : '<span style="color:#555">-</span>';
+    const after=ph.after? `<img class="rec-photo" src="${ph.after}" onclick="openLightbox('${r.date}','after')" title="训练后">` : '<span style="color:#555">-</span>';
+    return `<tr>
+      <td>${r.date}</td>
+      <td class="num">${r.weight}</td>
+      <td class="num">${r.bf!=null?r.bf+'%':'-'}</td>
+      <td class="num">${r.waist!=null?r.waist:'-'}</td>
+      <td>${r.trained==='yes'?({strength:'力量',cardio:'有氧',mix:'混合'})[r.type]||r.type:'未训练'}</td>
+      <td class="num">${r.adherence}%</td>
+      <td>${before}</td><td>${after}</td>
+      <td title="${esc(r.note)}">${esc(r.note).slice(0,14)||'-'}</td>
+      <td><button class="delBtn" onclick="delRecord('${r.date}')">删除</button></td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML=`<table>
+    <tr><th>日期</th><th>体重kg</th><th>体脂率</th><th>腰围cm</th><th>训练</th><th>饮食达成</th><th>练前照</th><th>练后照</th><th>训练备注</th><th></th></tr>
+    ${rows}
+  </table>`;
+}
+window.delRecord=function(date){
+  if(!confirm('删除 '+date+' 的记录（含照片）？')) return;
+  state.records=state.records.filter(r=>r.date!==date);
+  delete state.photos[date];
+  save();
+  renderRecords();
+};
+window.openLightbox=function(date,key){
+  const ph=state.photos[date]||{};
+  if(!ph[key]) return;
+  $('lightboxImg').src=ph[key];
+  $('lightbox').style.display='flex';
+};
+function exportCsv(){
+  const recs=state.records.slice().sort((a,b)=>a.date<b.date?-1:1);
+  if(!recs.length){ alert('暂无记录可导出。'); return; }
+  const head='日期,体重kg,体脂率%,腰围cm,是否训练,训练类型,饮食达成度%,训练备注,饮食备注';
+  const body=recs.map(r=>[r.date,r.weight,r.bf??'',r.waist??'',r.trained==='yes'?'是':'否',r.type||'',r.adherence,'"'+String(r.note||'').replace(/"/g,'""')+'"','"'+String(r.dietNote||'').replace(/"/g,'""')+'"'].join(',')).join('\n');
+  download('记录导出_'+todayStr()+'.csv',head+'\n'+body,'text/csv;charset=utf-8');
+}
+
+/* ================= 趋势图 ================= */
+function renderTrend(){
+  if(!state.bodyResult && !state.records.length){ alert('请先计算体脂率或添加记录。'); return; }
+  const series=buildSeries();
+  const days=clamp(+$('trendDays').value||90,7,1095);
+  const today=todayStr();
+  const endDate=fmtDate(addDays(new Date(),days));
+  drawChart($('cvBf'),'体脂率',series,'bf',today,endDate);
+  drawChart($('cvW'),'体重',series,'w',today,endDate);
+  drawChart($('cvM'),'肌肉量',series,'muscle',today,endDate);
+  drawChart($('cvF'),'脂肪量',series,'fat',today,endDate);
+}
+function drawChart(canvas,label,series,key,todayStr,endStr){
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  const W=rect.width||600, H=canvas.height||260;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  const pad={l:44,r:12,t:12,b:26};
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+
+  const t0=toDate(todayStr), t1=toDate(endStr);
+  const span=Math.max(1,(t1-t0)/864e5);
+
+  /* 收集所有数据点确定纵轴范围 */
+  const vals=[];
+  const colorMap={cons:'#e05c5c',norm:'#4f8cff',super:'#22c55e'};
+  ['cons','norm','super'].forEach(k=>{
+    series[k].forEach(pt=>{ if(pt.date<=endStr) vals.push(pt[key]); });
+  });
+  state.records.forEach(r=>{ if(r[key]!==undefined && r[key]!=null) vals.push(r[key]); });
+  const rBf = state.records.filter(r=>r.bf!=null).map(r=>r.bf);
+  const useRec = key==='bf'&&rBf.length;
+  if(useRec) vals.push(...rBf);
+
+  let min=Math.min(...vals), max=Math.max(...vals);
+  if(min===max){ min-=1; max+=1; }
+  const padV=(max-min)*0.12;
+  min-=padV; max+=padV;
+  const range=max-min;
+
+  const x=d=>pad.l+(d/span)*pw;
+  const y=v=>pad.t+ph-(v-min)/range*ph;
+
+  /* 网格 */
+  ctx.strokeStyle='rgba(255,255,255,0.06)';
+  ctx.fillStyle='#9aa4c2';
+  ctx.font='10px sans-serif';
+  ctx.textAlign='right';
+  const lines=5;
+  for(let i=0;i<=lines;i++){
+    const v=min+range*i/lines;
+    const yy=y(v);
+    ctx.beginPath(); ctx.moveTo(pad.l,yy); ctx.lineTo(W-pad.r,yy); ctx.stroke();
+    ctx.fillText(v.toFixed(1),pad.l-6,yy+3);
+  }
+  /* X 轴刻度 */
+  ctx.textAlign='center';
+  const tickN=Math.min(6,Math.floor(span/7)+1);
+  for(let i=0;i<=tickN;i++){
+    const dd=Math.round(span*i/tickN);
+    const xx=x(dd);
+    const ds=fmtDate(addDays(t0,dd));
+    ctx.fillText(ds.slice(5),xx,H-10);
+  }
+  /* 今天竖线 */
+  ctx.strokeStyle='rgba(255,255,255,0.35)';
+  ctx.setLineDash([4,4]);
+  const todayPos=(toDate(todayStr)-t0)/864e5;
+  if(todayPos>=0&&todayPos<=span){
+    ctx.beginPath(); ctx.moveTo(x(todayPos),pad.t); ctx.lineTo(x(todayPos),pad.t+ph); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  /* 三情景曲线 */
+  ['cons','norm','super'].forEach(k=>{
+    ctx.strokeStyle=colorMap[k];
+    ctx.lineWidth=1.6;
+    ctx.beginPath();
+    let started=false;
+    series[k].forEach(pt=>{
+      if(pt.date<t0||pt.date>t1) return;
+      const xx=x((toDate(pt.date)-t0)/864e5), yy=y(pt[key]);
+      if(!started){ ctx.moveTo(xx,yy); started=true; } else ctx.lineTo(xx,yy);
+    });
+    ctx.stroke();
+  });
+
+  /* 实际记录点 */
+  state.records.forEach(r=>{
+    const dd=(toDate(r.date)-t0)/864e5;
+    if(dd<0||dd>span) return;
+    const val=key==='bf'? r.bf : (key==='w'? r.weight : null);
+    if(val==null) return;
+    ctx.fillStyle='#fff';
+    ctx.beginPath();
+    ctx.arc(x(dd),y(val),3,0,Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle='#111';
+    ctx.lineWidth=1;
+    ctx.stroke();
+  });
+  ctx.fillStyle='#e8ecf6';
+  ctx.textAlign='left';
+  ctx.font='11px sans-serif';
+  ctx.fillText(label+' 趋势',pad.l+4,pad.t+12);
+}
+window.padL=44;
+window.addEventListener('resize',()=>{ if($('p-trend').classList.contains('active')) renderTrend(); });
+
+/* ================= 初始化 ================= */
+function fillAll(){
+  fillProfileForm();
+  fillPlanForm();
+  $('recDate').value=todayStr();
+  $('predictDate').value=state.predictDate||todayStr();
+  $('predictState').value=state.predictState||'daily';
+  $('trendDays').value=90;
+  renderRecords();
+}
+function init(){
+  load();
+  fillAll();
+  bindEvents();
+  $('recDate').value=todayStr();
+  if(state.bodyResult) renderPredict();
+}
+document.addEventListener('DOMContentLoaded',init);
+
+// PWA Service Worker 注册
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
