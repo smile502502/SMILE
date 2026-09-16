@@ -1,7 +1,7 @@
 {
-  "name": "身形预测规划器",
-  "short_name": "身形预测",
-  "description": "体脂率估算、三情景预测、每日记录校正的身形预测规划工具",
+  "name": "Body Shape Predictor",
+  "short_name": "Body Shape",
+  "description": "Estimate body fat, project future physique under 3 scenarios, track daily progress with photos",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "any",
