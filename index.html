@@ -221,25 +221,25 @@
         var html = '';
         // 今日新增
         if (data.todayNew && data.todayNew.length) {
-          html += '<div class="section"><div class="section-title">今日新增</div>';
+          html += '<div class="section"><div class="section-title">🔥 今日新增（' + data.todayNew.length + '部）</div>';
           data.todayNew.forEach(function (it) { html += cardHTML(it, true); });
           html += '</div>';
         }
         // 电影大片
         if (data.cctv6Movies && data.cctv6Movies.length) {
-          html += '<div class="section"><div class="section-title">电影大片</div>';
+          html += '<div class="section"><div class="section-title">🎬 电影大片（' + data.cctv6Movies.length + '部）</div>';
           data.cctv6Movies.forEach(function (it) { html += cardHTML(it, false); });
           html += '</div>';
         }
         // 电信ITV限免
         if (data.itvMovies && data.itvMovies.length) {
-          html += '<div class="section"><div class="section-title">电信ITV限免</div>';
+          html += '<div class="section"><div class="section-title">📺 电信ITV限免（' + data.itvMovies.length + '部）</div>';
           data.itvMovies.forEach(function (it) { html += cardHTML(it, false); });
           html += '</div>';
         }
         // 高分剧集
         if (data.dramas && data.dramas.length) {
-          html += '<div class="section"><div class="section-title">高分剧集</div>';
+          html += '<div class="section"><div class="section-title">🌟 高分剧集（' + data.dramas.length + '部）</div>';
           data.dramas.forEach(function (it) { html += cardHTML(it, false); });
           html += '</div>';
         }
