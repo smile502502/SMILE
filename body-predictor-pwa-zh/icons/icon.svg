@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="url(#bgGrad)"/>
+  
+  <!-- Body silhouette - simplified -->
+  <g transform="translate(256, 256)">
+    <!-- Head -->
+    <ellipse cx="0" cy="-140" rx="45" ry="55" fill="url(#bodyGrad)"/>
+    
+    <!-- Neck -->
+    <rect x="-18" y="-90" width="36" height="25" rx="8" fill="url(#bodyGrad)"/>
+    
+    <!-- Torso -->
+    <path d="M -70 -65 L -60 60 Q -50 85 0 90 Q 50 85 60 60 L 70 -65 Q 60 -75 0 -80 Q -60 -75 -70 -65 Z" fill="url(#bodyGrad)"/>
+    
+    <!-- Arms -->
+    <rect x="-100" y="-60" width="28" height="110" rx="14" fill="url(#bodyGrad)"/>
+    <rect x="72" y="-60" width="28" height="110" rx="14" fill="url(#bodyGrad)"/>
+    
+    <!-- Legs -->
+    <rect x="-45" y="85" width="32" height="110" rx="14" fill="url(#bodyGrad)"/>
+    <rect x="13" y="85" width="32" height="110" rx="14" fill="url(#bodyGrad)"/>
+  </g>
+  
+  <!-- Chart line indicator -->
+  <g transform="translate(130, 400)">
+    <path d="M 0 30 Q 30 -10 60 10 Q 90 30 120 -20 Q 150 -50 180 -30 Q 210 -10 240 -40" 
+          fill="none" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="240" cy="-40" r="8" fill="#10b981"/>
+  </g>
+  
+  <!-- Dumbbell icon accent -->
+  <g transform="translate(380, 100)" fill="#fbbf24">
+    <rect x="-8" y="-25" width="16" height="50" rx="4"/>
+    <rect x="-22" y="-30" width="14" height="60" rx="4"/>
+    <rect x="8" y="-30" width="14" height="60" rx="4"/>
+  </g>
+</svg>
