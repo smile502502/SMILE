@@ -74,10 +74,12 @@
       border-radius:8px;padding:2px 6px;white-space:nowrap;flex-shrink:0;
     }
 
-    /* 海报：外层容器固定 2:3 比例（div 无固有宽高比，aspect-ratio 可靠生效），
-       img 绝对定位填满容器 + object-fit:cover 裁剪，保证所有卡片海报高度一致 */
+    /* 海报：外层容器固定 2:3 比例。
+       用 padding-top:150% 经典方案（相对宽度计算高度），兼容所有浏览器，
+       避免 iOS15 以下 Safari 不支持 aspect-ratio 导致容器高度为 0、图片不显示 */
     .poster-wrap{
-      position:relative;width:100%;aspect-ratio:2/3;
+      position:relative;width:100%;
+      padding-top:150%;
       border-radius:8px;overflow:hidden;background:#F0F0F0;
       margin-bottom:6px;
     }
