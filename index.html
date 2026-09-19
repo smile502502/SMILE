@@ -263,8 +263,9 @@
         var badge = item.newToday ? '<span class="badge-new">新增</span>' : '';
         var cls = isNewSection ? 'card card-new' : 'card';
         var poster = POSTER_MAP[item.name];
+        // 海报路径加版本参数，绕过任何旧缓存（SW 缓存、浏览器缓存）
         var img = poster
-          ? '<div class="poster-wrap"><img src="posters/' + poster + '" alt="' + escapeHtml(item.name) + '" loading="lazy" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
+          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=3" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
               encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
               encodeURIComponent(item.info || '') + '\')"></div>'
           : '<div class="poster-wrap"></div>';

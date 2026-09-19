@@ -1,5 +1,5 @@
 /* 清泉看大片 PWA Service Worker */
-const CACHE = 'qingquan-pwa-v3';
+const CACHE = 'qingquan-pwa-v4';
 const CORE = [
   './',
   './index.html',
@@ -65,6 +65,22 @@ self.addEventListener('fetch', (event) => {
           throw new Error('bad resp');
         })
         .catch(() => caches.match(event.request).then((m) => m || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // 海报图片：网络优先，确保实时从 GitHub 加载（避免旧缓存导致空白）
+  if (url.pathname.indexOf('/posters/') !== -1) {
+    event.respondWith(
+      fetch(event.request)
+        .then((resp) => {
+          if (resp && resp.ok) {
+            const copy = resp.clone();
+            caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+          }
+          return resp;
+        })
+        .catch(() => caches.match(event.request))
     );
     return;
   }
