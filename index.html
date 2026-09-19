@@ -115,6 +115,12 @@
     .d-title{font-size:22px;font-weight:700;color:var(--topbar);margin-bottom:10px;}
     .d-channel{display:inline-block;background:var(--topbar);color:#fff;border-radius:13px;padding:4px 12px;font-size:13px;margin-bottom:14px;}
     .d-info{font-size:15px;line-height:1.9;color:#333;white-space:pre-line;}
+    .d-btns{margin-top:20px;}
+    .d-btn{display:block;width:100%;text-align:center;border:none;border-radius:10px;padding:13px 0;font-size:16px;font-weight:700;margin-bottom:10px;cursor:pointer;}
+    .d-btn:active{opacity:.8;}
+    .d-btn-speak{background:var(--topbar);color:#fff;}
+    .d-btn-stop{background:var(--amber);color:#1A1A1A;}
+    .d-unsupport{margin-top:14px;font-size:13px;color:var(--muted);text-align:center;}
     .back{display:inline-block;margin-top:24px;color:var(--topbar);font-size:14px;text-decoration:none;}
   </style>
 </head>
@@ -370,19 +376,86 @@
         }
       }
 
+      // ---- 朗读（speechSynthesis）----
+      function preprocessForTTS(text) {
+        if (!text) return '';
+        var s = text;
+        // CCTV-6 → CCTV六（连字符数字会被读"负"）
+        s = s.replace(/CCTV-6/g, 'CCTV六').replace(/CCTV-8/g, 'CCTV八').replace(/CCTV-11/g, 'CCTV十一');
+        // 2025-10-04 → 2025年10月4日
+        s = s.replace(/(\d{4})-(\d{1,2})-(\d{1,2})/g, '$1年$2月$3日');
+        // 9/15 → 9月15日（斜线日期会被读成分数）
+        s = s.replace(/(\d{1,2})\/(\d{1,2})/g, '$1月$2日');
+        // 08:50 → 8点50分
+        s = s.replace(/(\d{1,2}):(\d{2})/g, '$1点$2分');
+        // 平台名斜线 → 顿号
+        s = s.replace(/\//g, '、');
+        // 括号 → 逗号（保留内容）
+        s = s.replace(/[（）()]/g, '，');
+        // 清理多余标点
+        s = s.replace(/。。/g, '。').replace(/，，/g, '，').replace(/，。/g, '。');
+        return s;
+      }
+
+      function speakTextOf(name, channel, info) {
+        var parts = [];
+        if (name) parts.push(name);
+        if (channel) parts.push('播出平台，' + channel);
+        if (info) parts.push(info.replace(/\n/g, '。'));
+        return preprocessForTTS(parts.join('。'));
+      }
+
+      var speechSupported = 'speechSynthesis' in window;
+      var currentSpeakText = '';
+
+      function speakNow() {
+        if (!speechSupported || !currentSpeakText) return;
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+        var u = new SpeechSynthesisUtterance(currentSpeakText);
+        u.lang = 'zh-CN';
+        u.rate = 1;
+        var voices = window.speechSynthesis.getVoices();
+        for (var i = 0; i < voices.length; i++) {
+          if (voices[i].lang && voices[i].lang.indexOf('zh') === 0) { u.voice = voices[i]; break; }
+        }
+        window.speechSynthesis.speak(u);
+      }
+
+      function stopSpeak() {
+        if (!speechSupported) return;
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+
       // 详情页
       window.Qingquan = {
         openDetail: function (name, channel, info) {
           var dec = function (s) { try { return decodeURIComponent(s); } catch (e) { return s; } };
+          var n = dec(name), c = dec(channel || ''), f = dec(info || '');
+          // 返回列表时停止朗读，避免后台继续播
+          currentSpeakText = speakTextOf(n, c, f);
+          var btns = speechSupported
+            ? '<div class="d-btns">' +
+              '<button class="d-btn d-btn-speak" onclick="Qingquan.speak()">🔊 朗读</button>' +
+              '<button class="d-btn d-btn-stop" onclick="Qingquan.stopSpeak()">⏹ 停止</button>' +
+              '</div>'
+            : '<div class="d-unsupport">当前浏览器不支持语音朗读</div>';
           wrap.innerHTML =
             '<div class="detail">' +
-            '<div class="d-title">' + escapeHtml(dec(name)) + '</div>' +
-            (channel ? '<div class="d-channel">' + escapeHtml(dec(channel)) + '</div>' : '') +
-            '<div class="d-info">' + escapeHtml(dec(info)) + '</div>' +
+            '<div class="d-title">' + escapeHtml(n) + '</div>' +
+            (c ? '<div class="d-channel">' + escapeHtml(c) + '</div>' : '') +
+            '<div class="d-info">' + escapeHtml(f) + '</div>' +
+            btns +
             '<a class="back" href="javascript:void(0)" onclick="Qingquan.back()">← 返回列表</a>' +
             '</div>';
+          // 进入详情页自动朗读（iOS 需在用户手势内触发；openDetail 本身来自点击，满足手势要求）
+          if (speechSupported) {
+            speakNow();
+          }
         },
+        speak: function () { speakNow(); },
+        stopSpeak: function () { stopSpeak(); },
         back: function () {
+          stopSpeak();  // 返回列表先停朗读
           var cached = cacheLoad();
           render(cached || BUILTIN);
         }
