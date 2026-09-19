@@ -74,13 +74,17 @@
       border-radius:8px;padding:2px 6px;white-space:nowrap;flex-shrink:0;
     }
 
-    /* 海报：统一 2:3 比例，CENTER_CROP 等效裁剪，固定高度 */
-    .card-poster{
-      width:100%;aspect-ratio:2/3;object-fit:cover;
-      border-radius:8px;background:#F0F0F0;
-      display:block;margin-bottom:6px;
+    /* 海报：外层容器固定 2:3 比例（div 无固有宽高比，aspect-ratio 可靠生效），
+       img 绝对定位填满容器 + object-fit:cover 裁剪，保证所有卡片海报高度一致 */
+    .poster-wrap{
+      position:relative;width:100%;aspect-ratio:2/3;
+      border-radius:8px;overflow:hidden;background:#F0F0F0;
+      margin-bottom:6px;
     }
-    .card-poster.ph{background:#F0F0F0;}
+    .poster-wrap img{
+      position:absolute;top:0;left:0;width:100%;height:100%;
+      object-fit:cover;
+    }
 
     /* 频道行：独立固定高度，保证左右两列对齐 */
     .card-channel{
@@ -260,10 +264,10 @@
         var cls = isNewSection ? 'card card-new' : 'card';
         var poster = POSTER_MAP[item.name];
         var img = poster
-          ? '<img class="card-poster" src="posters/' + poster + '" alt="' + escapeHtml(item.name) + '" loading="lazy" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
+          ? '<div class="poster-wrap"><img src="posters/' + poster + '" alt="' + escapeHtml(item.name) + '" loading="lazy" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
               encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
-              encodeURIComponent(item.info || '') + '\')">'
-          : '<div class="card-poster ph"></div>';
+              encodeURIComponent(item.info || '') + '\')"></div>'
+          : '<div class="poster-wrap"></div>';
         var oncard = 'onclick="Qingquan.openDetail(\'' +
               encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
               encodeURIComponent(item.info || '') + '\')"';
