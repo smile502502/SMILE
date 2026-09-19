@@ -1,12 +1,35 @@
 /* 清泉看大片 PWA Service Worker */
-const CACHE = 'qingquan-pwa-v1';
+const CACHE = 'qingquan-pwa-v2';
 const CORE = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './icon-180.png'
+  './icon-180.png',
+  './posters/aiqingshenhua.jpg',
+  './posters/beishang.jpg',
+  './posters/bxjgqiyuan.jpg',
+  './posters/changjinhu.jpg',
+  './posters/changjinhu2.jpg',
+  './posters/chirensheng3.jpg',
+  './posters/dongjidao.jpg',
+  './posters/fumuaiqing.jpg',
+  './posters/jigongyouji.jpg',
+  './posters/motianyingjiu.jpg',
+  './posters/rslbrs.jpg',
+  './posters/sishi2.jpg',
+  './posters/tianxingjian.jpg',
+  './posters/waijiaofengyun.jpg',
+  './posters/woshexingjing.jpg',
+  './posters/wupan.jpg',
+  './posters/xongshishaonian.jpg',
+  './posters/yewen4.jpg',
+  './posters/zhujue.jpg',
+  './posters/zreyulong.jpg',
+  './posters/zyj_cwzz.jpg',
+  './posters/zyj_xbcj.jpg',
+  './posters/zyj_yxhp.jpg'
 ];
 
 // 安装：预缓存核心资源
