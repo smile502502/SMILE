@@ -377,21 +377,48 @@
       }
 
       // ---- 朗读（speechSynthesis）----
+      // ---- 朗读文本预处理 ----
+      // 中文数字转换（年份/奖项 2025→二零二五、2015→二零一五，逐位读法）
+      function numToChinese(n) {
+        var digits = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+        var s = String(n);
+        if (s.length === 4) {
+          // 年份类 4 位数字按逐位读法：2025 → 二零二五
+          return digits[parseInt(s[0], 10)] + digits[parseInt(s[1], 10)] +
+                 digits[parseInt(s[2], 10)] + digits[parseInt(s[3], 10)];
+        }
+        return digits[parseInt(s, 10)];
+      }
+
       function preprocessForTTS(text) {
         if (!text) return '';
         var s = text;
         // CCTV-6 → CCTV六（连字符数字会被读"负"）
         s = s.replace(/CCTV-6/g, 'CCTV六').replace(/CCTV-8/g, 'CCTV八').replace(/CCTV-11/g, 'CCTV十一');
-        // 2025-10-04 → 2025年10月4日
-        s = s.replace(/(\d{4})-(\d{1,2})-(\d{1,2})/g, '$1年$2月$3日');
-        // 9/15 → 9月15日（斜线日期会被读成分数）
-        s = s.replace(/(\d{1,2})\/(\d{1,2})/g, '$1月$2日');
-        // 08:50 → 8点50分
-        s = s.replace(/(\d{1,2}):(\d{2})/g, '$1点$2分');
+        // 完整日期 2025-10-04 → 2025年10月4日（去月日补零）
+        s = s.replace(/(\d{4})-(\d{1,2})-(\d{1,2})/g, function (m, y, mo, d) {
+          return y + '年' + parseInt(mo, 10) + '月' + parseInt(d, 10) + '日';
+        });
+        // 斜线日期 9/15 → 9月15日（去补零，避免被读成分数）
+        s = s.replace(/(\d{1,2})\/(\d{1,2})/g, function (m, mo, d) {
+          return parseInt(mo, 10) + '月' + parseInt(d, 10) + '日';
+        });
+        // 时间 09:49 → 9点49分（去补零，避免"零九"）
+        s = s.replace(/(\d{1,2}):(\d{2})/g, function (m, h, mi) {
+          return parseInt(h, 10) + '点' + parseInt(mi, 10) + '分';
+        });
         // 平台名斜线 → 顿号
         s = s.replace(/\//g, '、');
         // 括号 → 逗号（保留内容）
         s = s.replace(/[（）()]/g, '，');
+        // 4位年份/奖项数字（后不跟 年/月/日/点/分 等日期单位）→ 中文数字
+        s = s.replace(/(?<![0-9])(\d{4})(?![0-9年日月点分])(?=[^0-9]|$)/g, function (m, n) {
+          return numToChinese(n);
+        });
+        // 单数字后跟量词（部/集/个/次/天/周/场/届/期/种/家/国/班，不含"月"避免破坏日期）→ 中文
+        s = s.replace(/(?<![0-9])(\d)(?=[部集个次天周场届期种家国班])(?![0-9])/g, function (m, n) {
+          return numToChinese(n);
+        });
         // 清理多余标点
         s = s.replace(/。。/g, '。').replace(/，，/g, '，').replace(/，。/g, '。');
         return s;
