@@ -412,11 +412,14 @@
         // 括号 → 逗号（保留内容）
         s = s.replace(/[（）()]/g, '，');
         // 4位年份/奖项数字（后不跟 年/月/日/点/分 等日期单位）→ 中文数字
-        s = s.replace(/(?<![0-9])(\d{4})(?![0-9年日月点分])(?=[^0-9]|$)/g, function (m, n) {
+        // 注意：不用 lookbehind（旧 iOS Safari<16.4 不支持，会导致整页脚本解析失败）
+        s = s.replace(/(\d{4})(?![0-9年日月点分])(?=[^0-9]|$)/g, function (m, n, offset, str) {
+          if (offset > 0 && str.charAt(offset - 1) >= '0' && str.charAt(offset - 1) <= '9') return m;
           return numToChinese(n);
         });
         // 单数字后跟量词（部/集/个/次/天/周/场/届/期/种/家/国/班，不含"月"避免破坏日期）→ 中文
-        s = s.replace(/(?<![0-9])(\d)(?=[部集个次天周场届期种家国班])(?![0-9])/g, function (m, n) {
+        s = s.replace(/(\d)(?=[部集个次天周场届期种家国班])(?![0-9])/g, function (m, n, offset, str) {
+          if (offset > 0 && str.charAt(offset - 1) >= '0' && str.charAt(offset - 1) <= '9') return m;
           return numToChinese(n);
         });
         // 清理多余标点
