@@ -62,6 +62,7 @@
     .wrap{max-width:720px;margin:0 auto;padding:14px 10px 0;}
     .section{margin-bottom:22px;}
     .section-title{font-size:16px;font-weight:700;margin-bottom:10px;}
+    .no-new-tip{font-size:13px;color:#90A4AE;padding:2px 2px 6px;}
 
     /* 双列网格 */
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -164,8 +165,21 @@
       var BUILTIN = {
   "version": "2026-09-20",
   "window": "2026-09-14 至 09-20",
-  "todayNew": [],
+  "todayNew": [
+    {
+      "name": "凤凰琴",
+      "channel": "CCTV-6 电影频道",
+      "info": "金鸡奖1994年\n9/20（周日）5:2 播出",
+      "newToday": true
+    }
+  ],
   "cctv6Movies": [
+    {
+      "name": "凤凰琴",
+      "channel": "CCTV-6 电影频道",
+      "info": "金鸡奖1994年\n9/20（周日）5:2 播出",
+      "newToday": true
+    },
     {
       "name": "志愿军：雄兵出击",
       "channel": "CCTV-6 电影频道",
@@ -249,7 +263,7 @@
     {
       "name": "死神来了：血脉诅咒",
       "channel": "海南电信IPTV 限免",
-      "info": "2025-08-22内地公映，票房 2.0亿\n9/9 起限免",
+      "info": "2025年8月22日内地公映，票房 2.0亿\n9/9 起限免",
       "newToday": false
     }
   ],
@@ -263,13 +277,19 @@
     {
       "name": "我是刑警",
       "channel": "CCTV-8 电视剧",
-      "info": "白玉兰奖2025评委会奖\n9/14 首播第1集，9/19 播至第37集",
+      "info": "白玉兰奖2025年评委会奖；收视率前50\n9/14 首播第1集，9/19 播至第37集",
+      "newToday": false
+    },
+    {
+      "name": "济公",
+      "channel": "河南卫视",
+      "info": "收视率前50\n9/15-9/18 每天上午2场连播",
       "newToday": false
     },
     {
       "name": "济公游记",
       "channel": "河南卫视",
-      "info": "豆瓣9.0\n9/15 首播，9/15-9/18 连播",
+      "info": "豆瓣9.0\n9/15-9/18 午后多集连播",
       "newToday": false
     },
     {
@@ -281,7 +301,7 @@
     {
       "name": "父母爱情",
       "channel": "湖北卫视/河北卫视",
-      "info": "飞天奖2015；豆瓣9.3\n9/14-9/18 多集连播",
+      "info": "飞天奖2015年；豆瓣9.3；收视率前50；评分人数前50\n9/14、9/18 播出",
       "newToday": false
     },
     {
@@ -293,13 +313,37 @@
     {
       "name": "外交风云",
       "channel": "山东卫视/深圳卫视",
-      "info": "金鹰奖2020最佳电视剧\n9/17-9/18 各播1场",
+      "info": "金鹰奖2020年最佳电视剧\n9/17-9/18 各播1场",
       "newToday": false
     },
     {
       "name": "西游记",
       "channel": "河南卫视",
-      "info": "豆瓣9.7\n9/19-9/20 多集连播",
+      "info": "豆瓣9.7；收视率前50；评分人数前50\n9/19-9/20 多集连播",
+      "newToday": false
+    },
+    {
+      "name": "大决战",
+      "channel": "CCTV-7 国防军事",
+      "info": "收视率前50\n9/14-9/20 每天下午3集连播（第20-40集）",
+      "newToday": false
+    },
+    {
+      "name": "宰相刘罗锅",
+      "channel": "河南卫视",
+      "info": "收视率前50\n9/14 8集连播",
+      "newToday": false
+    },
+    {
+      "name": "藏海传",
+      "channel": "CCTV-12 社会与法",
+      "info": "播放量前50；评分人数前50\n9/14-9/15 播至第40集（大结局）",
+      "newToday": false
+    },
+    {
+      "name": "生万物",
+      "channel": "东方卫视",
+      "info": "播放量前50\n9/14-9/15 播出第31-36集",
       "newToday": false
     }
   ]
@@ -403,7 +447,13 @@
         '父母爱情': 'fumuaiqing.jpg',
         '天行健': 'tianxingjian.jpg',
         '外交风云': 'waijiaofengyun.jpg',
-        '西游记': 'xiyouji.jpg'
+        '西游记': 'xiyouji.jpg',
+        '凤凰琴': 'fenghuangqin.jpg',
+        '济公': 'jigong.jpg',
+        '大决战': 'dajuezhan.jpg',
+        '宰相刘罗锅': 'zaixiangluoguo.jpg',
+        '藏海传': 'canghaichuan.jpg',
+        '生万物': 'shengwanwu.jpg'
       };
 
       function cardHTML(item, isNewSection) {
@@ -412,7 +462,7 @@
         var poster = POSTER_MAP[item.name];
         // 海报路径加版本参数，绕过任何旧缓存（SW 缓存、浏览器缓存）
         var img = poster
-          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=5" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
+          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=6" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
               encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
               encodeURIComponent(item.info || '') + '\')"></div>'
           : '<div class="poster-wrap"></div>';
@@ -439,7 +489,14 @@
           h += '</div></div>';
           return h;
         }
-        html += sectionHTML('🔥 今日新增（' + (data.todayNew ? data.todayNew.length : 0) + '部）', data.todayNew, true);
+        // 今日新增：为空也显示（0部）+ 占位提示，与 APK 行为一致
+        var newsCount = data.todayNew ? data.todayNew.length : 0;
+        if (newsCount > 0) {
+          html += sectionHTML('🔥 今日新增（' + newsCount + '部）', data.todayNew, true);
+        } else {
+          html += '<div class="section"><div class="section-title">🔥 今日新增（0部）</div>' +
+                  '<div class="no-new-tip">（今日无新增）</div></div>';
+        }
         html += sectionHTML('🎬 电影大片（' + (data.cctv6Movies ? data.cctv6Movies.length : 0) + '部）', data.cctv6Movies, false);
         html += sectionHTML('📺 电信ITV限免（' + (data.itvMovies ? data.itvMovies.length : 0) + '部）', data.itvMovies, false);
         html += sectionHTML('🌟 高分剧集（' + (data.dramas ? data.dramas.length : 0) + '部）', data.dramas, false);
