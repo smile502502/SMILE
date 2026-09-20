@@ -1,5 +1,5 @@
 /* 清泉看大片 PWA Service Worker */
-const CACHE = 'qingquan-pwa-v14';
+const CACHE = 'qingquan-pwa-v15';
 const CORE = [
   './',
   './index.html',
@@ -30,6 +30,7 @@ const CORE = [
   './posters/zaixiangluoguo.jpg',
   './posters/canghaichuan.jpg',
   './posters/shengwanwu.jpg',
+  './posters/shisshenlai.jpg',
   './posters/xongshishaonian.jpg',
   './posters/yewen4.jpg',
   './posters/zhujue.jpg',
