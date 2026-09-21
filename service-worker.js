@@ -1,5 +1,5 @@
 /* 清泉看大片 PWA Service Worker */
-const CACHE = 'qingquan-pwa-v16';
+const CACHE = 'qingquan-pwa-v17';
 const CORE = [
   './',
   './index.html',
