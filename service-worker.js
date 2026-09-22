@@ -1,5 +1,5 @@
 /* 清泉看大片 PWA Service Worker */
-const CACHE = 'qingquan-pwa-v17';
+const CACHE = 'qingquan-pwa-v19';
 const CORE = [
   './',
   './index.html',
@@ -37,7 +37,8 @@ const CORE = [
   './posters/zreyulong.jpg',
   './posters/zyj_cwzz.jpg',
   './posters/zyj_xbcj.jpg',
-  './posters/zyj_yxhp.jpg'
+  './posters/zyj_yxhp.jpg',
+  './posters/zhiquweihushan.jpg'
 ];
 
 // 安装：预缓存核心资源
