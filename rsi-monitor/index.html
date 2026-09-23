@@ -55,10 +55,10 @@ tr.error{color:#6c7086}
 </table>
 <div id="toast"></div>
 <script>
-var RSI_PERIOD=6,RSI_THRESHOLD=22,RSI_PREV_THRESHOLD=20;
+var RSI_PERIOD=6,RSI_THRESHOLD=21,RSI_PREV_THRESHOLD=20,RSI_COMBINED_THRESHOLD=23;
 var REFRESH_INTERVAL=12,IDLE_INTERVAL=600,HIST_BARS=320,MAX_CODES=30;
-var ALERT_WINDOWS=[[[9,50],[10,3]],[[10,20],[10,33]],[[10,50],[11,3]],[[11,20],[11,30]],
-[[13,0],[13,3]],[[13,20],[13,33]],[[13,50],[14,3]],[[14,20],[14,33]],[[14,50],[14,59]]];
+var ALERT_WINDOWS=[[[9,55],[10,3]],[[10,25],[10,33]],[[10,55],[11,3]],[[11,25],[11,30]],
+[[13,0],[13,3]],[[13,25],[13,33]],[[13,55],[14,3]],[[14,25],[14,33]],[[14,52],[14,59]]];
 var alertDedup={};
 var stocks=[],timer=null,trading=false,refreshing=false;
 var STORAGE_KEY='rsi_monitor_codes';
@@ -115,7 +115,7 @@ function loadFromFile(){
 var saved=null;
 try{saved=localStorage.getItem(STORAGE_KEY)}catch(e){}
 if(!saved){
-saved='512880\n300432\n300576\n300617\n300490\n300136\n300571\n301155\n300035\n300042\n300118\n300166\n301188\n301319\n301548\n300127\n';
+saved='512880\n300432\n300576\n300617\n300136\n300490\n300571\n301155\n300035\n300042\n300118\n300166\n301188\n301319\n301548\n300127\n159806\n159637\n512760\n515790\n159618\n159808\n512480\n';
 }
 return saved;
 }
@@ -208,6 +208,14 @@ if(avgL==0)return 100;
 return 100-100/(1+avgG/avgL);
 }
 
+// 新指标 = RSI修正值：>70→+0.3；70>=x>35→-0.2；<=35→+0.2
+function adjustRSI(rsi){
+if(rsi==null)return null;
+if(rsi>70)return rsi+0.3;
+if(rsi>35)return rsi-0.2;
+return rsi+0.2;
+}
+
 function forwardAdjust(bars,quote){
 if(!bars||!quote||quote.lastClose<=0)return;
 var anchorIdx=-1,today=quote.time.toISOString().substring(0,10);
@@ -234,7 +242,7 @@ var results=await Promise.all(promises);
 stocks.forEach(function(s,i){
 var bars=results[i];
 if(bars){s.bars=bars;s.err='';forwardAdjust(s.bars,s.quote);mergeOngoing(s.bars,s.quote);
-s.rsi=calcRSI(s.bars,RSI_PERIOD);s.rsiPrev=calcRSI(s.bars.slice(0,-1),RSI_PERIOD);
+s.rsi=adjustRSI(calcRSI(s.bars,RSI_PERIOD));s.rsiPrev=adjustRSI(calcRSI(s.bars.slice(0,-1),RSI_PERIOD));
 if(s.rsi!=null)s.lastBarTime=s.bars[s.bars.length-1].time;}
 else s.err='K线获取失败';
 });
@@ -247,7 +255,7 @@ var today=bjDateStr(now);
 var wid=alertWindowId(now);
 stocks.forEach(function(s){
 if(s.rsi==null)return;
-var triggered=s.rsi<RSI_THRESHOLD||(s.rsiPrev!=null&&s.rsiPrev<RSI_PREV_THRESHOLD);
+var triggered=s.rsi<RSI_THRESHOLD||(s.rsiPrev!=null&&s.rsiPrev<RSI_PREV_THRESHOLD&&s.rsi<RSI_COMBINED_THRESHOLD);
 if(triggered){
 if(!s.signalActive)s.signalActive=true;
 if(wid>=0){
@@ -275,8 +283,10 @@ var etf=isETF(s.code6);var pfmt=etf?3:2;
 var condPrice=price*1.015;
 var bt=s.lastBarTime?bjTimeStr(s.lastBarTime).substring(5,16):'--';
 var prevS=s.rsiPrev!=null?s.rsiPrev.toFixed(1):'--';
-var sigTxt='--',cls='normal';
-if(s.signalActive){sigTxt='★买入信号★';cls='signal';sigCount++}
+var sigTxt=s.signalActive?'★买入信号★':'--',cls='normal';
+if(s.signalActive)sigCount++;
+// 新指标列三色（第七版修订）：<=20红行 / (20,30)黄行 / >=30正常行（信号用文字显示）
+if(s.rsi<=20){cls='signal'}
 else if(s.rsi<30){cls='near'}
 tr.className=cls;
 var pctCls=pct<0?'pct-down':'pct-up';
@@ -291,7 +301,7 @@ var now=bjNow();var nowStr=bjTimeStr(now);
 var mkt=trading?'交易中('+interval+'s)':'休市(慢刷'+Math.round(interval/60)+'min)';
 var awid=alertWindowId(now);
 var awTxt=awid>=0?'内('+(awid+1)+')':'外';
-document.getElementById('status').innerHTML='数据源:'+srcDesc+' | '+mkt+' | '+nowStr+' | '+took.toFixed(1)+'s | 阈值:新指标<'+RSI_THRESHOLD+'或前值<'+RSI_PREV_THRESHOLD+' | 信号:'+sigCount+'只 | 报警窗口:'+awTxt+' | 共'+stocks.length+'只';
+document.getElementById('status').innerHTML='数据源:'+srcDesc+' | '+mkt+' | '+nowStr+' | '+took.toFixed(1)+'s | 阈值:新指标<'+RSI_THRESHOLD+'或前值<'+RSI_PREV_THRESHOLD+'且现值<'+RSI_COMBINED_THRESHOLD+' | 信号:'+sigCount+'只 | 报警窗口:'+awTxt+' | 共'+stocks.length+'只';
 }
 
 // ---- 声光报警（Web 版）----
@@ -337,7 +347,7 @@ var input=document.getElementById('code-input');
 var msg=document.getElementById('add-msg');
 var raw=input.value.trim();
 msg.className='msg';
-if(!raw){msg.className='msg msg-err';msg.textContent='请输入代码';return}
+if(!raw){msg.className='msg msg-err';msg.textContent='输入';return}
 var m=raw.match(/(\d{6})/);
 if(!m){msg.className='msg msg-err';msg.textContent='需6位数字代码';return}
 var code6=m[1];
