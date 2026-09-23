@@ -301,7 +301,7 @@ var now=bjNow();var nowStr=bjTimeStr(now);
 var mkt=trading?'交易中('+interval+'s)':'休市(慢刷'+Math.round(interval/60)+'min)';
 var awid=alertWindowId(now);
 var awTxt=awid>=0?'内('+(awid+1)+')':'外';
-document.getElementById('status').innerHTML='数据源:'+srcDesc+' | '+mkt+' | '+nowStr+' | '+took.toFixed(1)+'s | 阈值:新指标<'+RSI_THRESHOLD+'或前值<'+RSI_PREV_THRESHOLD+'且现值<'+RSI_COMBINED_THRESHOLD+' | 信号:'+sigCount+'只 | 报警窗口:'+awTxt+' | 共'+stocks.length+'只';
+document.getElementById('status').innerHTML='数据源:'+srcDesc+' | '+mkt+' | '+nowStr+' | '+took.toFixed(1)+'s | 信号:'+sigCount+'只 | 报警窗口:'+awTxt+' | 共'+stocks.length+'只';
 }
 
 // ---- 声光报警（Web 版）----
