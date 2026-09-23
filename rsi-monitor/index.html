@@ -28,6 +28,7 @@ tr.error{color:#6c7086}
 #input-bar input{width:120px;height:32px;background:#313244;color:#cdd6f4;border:1px solid#45475a;border-radius:4px;padding:0 6px;font-size:14px;text-align:center}
 #input-bar button{margin-left:6px;padding:6px 16px;background:#89b4fa;color:#1e1e2e;border:none;border-radius:4px;font-size:12px;font-weight:bold;height:32px;cursor:pointer}
 #input-bar .del-btn{background:#f38ba8;padding:2px 8px;font-size:11px}
+#input-bar .exit-btn{margin-left:auto}
 #input-bar .msg{font-size:11px;margin-top:4px}
 .msg-ok{color:#a6e3a1}.msg-err{color:#f38ba8}
 #toast{display:none;position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#f38ba8;color:#1e1e2e;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:bold;z-index:100;max-width:90%;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.4)}
@@ -44,8 +45,8 @@ tr.error{color:#6c7086}
 <input id="code-input" type="text" maxlength="6" placeholder="输入6位代码">
 <button onclick="addCode()">增加清单</button>
 <button onclick="manualRefresh()" style="background:#a6e3a1">刷新</button>
-<button onclick="exitApp()" style="background:#f38ba8">退出</button>
 <span id="add-msg" class="msg"></span>
+<button onclick="exitApp()" class="exit-btn" style="background:#f38ba8">退出</button>
 </div>
 <table id="main-table">
 <thead><tr>
@@ -349,10 +350,10 @@ var raw=input.value.trim();
 msg.className='msg';
 if(!raw){msg.className='msg msg-err';msg.textContent='输入';return}
 var m=raw.match(/(\d{6})/);
-if(!m){msg.className='msg msg-err';msg.textContent='需6位数字代码';return}
+if(!m){msg.className='msg msg-err';msg.textContent='无效';return}
 var code6=m[1];
 var p2=code6.substring(0,2),p3=code6.substring(0,3);
-if(p2!='30'&&p2!='51'&&p2!='56'&&p2!='58'&&p3!='159'){msg.className='msg msg-err';msg.textContent='仅支持30/51/56/58/159打头';return}
+if(p2!='30'&&p2!='51'&&p2!='56'&&p2!='58'&&p3!='159'){msg.className='msg msg-err';msg.textContent='无效';return}
 for(var i=0;i<stocks.length;i++){if(stocks[i].code6==code6){msg.className='msg msg-err';msg.textContent=code6+' 已存在';return}}
 if(stocks.length>=MAX_CODES){msg.className='msg msg-err';msg.textContent='已达上限'+MAX_CODES+'个';return}
 stocks.push({code6:code6,lineNo:stocks.length+1,name:'',bars:null,rsi:null,rsiPrev:null,quote:null,lastBarTime:null,signalActive:false,err:''});
