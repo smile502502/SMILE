@@ -212,7 +212,7 @@ return 100-100/(1+avgG/avgL);
 // 新指标 = RSI修正值：>70→+0.3；70>=x>35→-0.2；<=35→+0.2
 function adjustRSI(rsi){
 if(rsi==null)return null;
-if(rsi>70)return rsi+0.3;
+if(rsi>=70)return rsi+0.3;
 if(rsi>35)return rsi-0.2;
 return rsi+0.2;
 }
@@ -244,9 +244,19 @@ stocks.forEach(function(s,i){
 var bars=results[i];
 if(bars){s.bars=bars;s.err='';forwardAdjust(s.bars,s.quote);mergeOngoing(s.bars,s.quote);
 s.rsi=adjustRSI(calcRSI(s.bars,RSI_PERIOD));s.rsiPrev=adjustRSI(calcRSI(s.bars.slice(0,-1),RSI_PERIOD));
-if(s.rsi!=null)s.lastBarTime=s.bars[s.bars.length-1].time;}
+if(s.rsi!=null)s.lastBarTime=s.bars[s.bars.length-1].time;
+extractDailyHL(s);}
 else s.err='K线获取失败';
 });
+}
+
+function extractDailyHL(s){
+if(!s.bars||s.bars.length<2){s.todayHigh=s.prevDailyLow=null;return}
+var byDate={};
+s.bars.forEach(function(b){var d=bjDateStr(b.time);if(!byDate[d])byDate[d]=[];byDate[d].push(b)});
+var dates=Object.keys(byDate).sort();
+if(dates.length>=1){var tb=byDate[dates[dates.length-1]];s.todayHigh=Math.max.apply(null,tb.map(function(b){return b.high}))}else s.todayHigh=null;
+if(dates.length>=2){var pb=byDate[dates[dates.length-2]];s.prevDailyLow=Math.min.apply(null,pb.map(function(b){return b.low}))}else s.prevDailyLow=null;
 }
 
 function checkSignals(){
@@ -257,6 +267,7 @@ var wid=alertWindowId(now);
 stocks.forEach(function(s){
 if(s.rsi==null)return;
 var triggered=s.rsi<RSI_THRESHOLD||(s.rsiPrev!=null&&s.rsiPrev<RSI_PREV_THRESHOLD&&s.rsi<RSI_COMBINED_THRESHOLD);
+if(triggered&&(s.todayHigh==null||s.prevDailyLow==null||s.todayHigh<=s.prevDailyLow))triggered=false;
 if(triggered){
 if(!s.signalActive)s.signalActive=true;
 if(wid>=0){

@@ -1,5 +1,5 @@
 ﻿/* A股新指标监控 PWA Service Worker */
-var CACHE='rsi-monitor-pwa-v6';
+var CACHE='rsi-monitor-pwa-v7';
 var CORE=[
   './',
   './index.html',
