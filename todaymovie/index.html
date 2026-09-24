@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>清泉看大片</title>
+  <meta name="description" content="每日免费影视推荐：央视、卫视、电信ITV免费大片与高分剧集。">
+  <!-- iOS 添加到主屏幕 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="清泉看大片">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#455A64">
+  <style>
+    :root{
+      --topbar:#455A64;
+      --bg:#F7F5F1;
+      --ink:#1A1A1A;
+      --muted:#666;
+      --red:#B71C1C;
+      --amber:#FFC107;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    html,body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;}
+    body{padding-bottom:calc(env(safe-area-inset-bottom) + 90px);}
+
+    /* 顶部栏 */
+    .topbar{
+      position:sticky;top:0;z-index:10;
+      display:flex;align-items:center;gap:10px;
+      background:var(--topbar);color:#fff;
+      padding:12px 14px;
+      padding-top:calc(env(safe-area-inset-top) + 12px);
+    }
+    .topbar .title{font-size:18px;font-weight:700;white-space:nowrap;}
+    .topbar .window{flex:1;text-align:right;font-size:12px;color:#CFD8DC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .refresh-btn{
+      margin-left:auto;background:var(--amber);color:#1A1A1A;
+      border-radius:14px;padding:5px 14px;font-size:13px;font-weight:600;white-space:nowrap;
+    }
+    .refresh-btn:active{opacity:.8;}
+    .refresh-btn.disabled{background:#CFD8DC;color:#90A4AE;}
+    .refresh-blink{
+      background:#FF5252 !important;color:#fff !important;
+      animation:qqblink 1.1s linear infinite;
+    }
+    @keyframes qqblink{0%,100%{opacity:1;}50%{opacity:.25;}}
+    /* 数据非最新警示条（与 APK maybeAddStaleWarning 一致） */
+    .stale-warn{
+      max-width:720px;margin:12px auto 0;
+      background:#E65100;color:#fff;
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:14px;line-height:1.6;
+      cursor:pointer;
+    }
+    .stale-warn:active{opacity:.85;}
+
+    /* 内容 */
+    .wrap{max-width:720px;margin:0 auto;padding:14px 10px 0;}
+    .section{margin-bottom:22px;}
+    .section-title{font-size:16px;font-weight:700;margin-bottom:10px;}
+    .no-new-tip{font-size:13px;color:#90A4AE;padding:2px 2px 6px;}
+
+    /* 双列网格 */
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+    .card{
+      background:#fff;border-radius:12px;padding:10px 10px 8px;
+      box-shadow:0 1px 3px rgba(0,0,0,.08);
+      display:flex;flex-direction:column;
+      min-width:0;
+    }
+    .card-new{border:2px solid var(--red);}
+
+    /* 片名行：固定高度，片名 flex 省略，徽章靠右 */
+    .card-head{
+      display:flex;align-items:center;gap:6px;
+      height:26px;min-height:26px;margin-bottom:6px;
+    }
+    .card-name{
+      font-size:15px;font-weight:600;color:var(--ink);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      flex:1;min-width:0;
+    }
+    .badge-new{
+      background:var(--red);color:#fff;font-size:10px;font-weight:700;
+      border-radius:8px;padding:2px 6px;white-space:nowrap;flex-shrink:0;
+    }
+
+    /* 海报：外层容器固定 2:3 比例。
+       用 padding-top:150% 经典方案（相对宽度计算高度），兼容所有浏览器，
+       避免 iOS15 以下 Safari 不支持 aspect-ratio 导致容器高度为 0、图片不显示 */
+    .poster-wrap{
+      position:relative;width:100%;
+      padding-top:150%;
+      border-radius:8px;overflow:hidden;background:#F0F0F0;
+      margin-bottom:6px;
+    }
+    .poster-wrap img{
+      position:absolute;top:0;left:0;width:100%;height:100%;
+      object-fit:cover;
+    }
+
+    /* 频道行：独立固定高度，保证左右两列对齐 */
+    .card-channel{
+      font-size:12px;color:#B71C1C;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      height:18px;line-height:18px;margin-bottom:2px;
+    }
+    .card-body{font-size:12px;line-height:1.5;color:#333;white-space:pre-line;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+    .card-hint{margin-top:6px;font-size:11px;color:var(--muted);text-align:right;}
+
+    /* 页脚 */
+    .footer{
+      position:fixed;left:0;right:0;bottom:0;z-index:10;
+      background:var(--bg);
+      padding:14px 10px calc(env(safe-area-inset-bottom) + 14px);
+      text-align:center;
+    }
+    .footer .slogan{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:1px;}
+    .footer .ver{font-size:11px;color:#999;margin-top:4px;}
+
+    /* 状态/空态 */
+    .empty{text-align:center;color:var(--muted);padding:30px 0;font-size:14px;}
+
+    /* 详情页 */
+    .detail{padding:20px 16px;}
+    .d-title{font-size:22px;font-weight:700;color:var(--topbar);margin-bottom:10px;}
+    .d-channel{display:inline-block;background:var(--topbar);color:#fff;border-radius:13px;padding:4px 12px;font-size:13px;margin-bottom:14px;}
+    .d-info{font-size:15px;line-height:1.9;color:#333;white-space:pre-line;}
+    .d-btns{margin-top:20px;}
+    .d-btn{display:block;width:100%;text-align:center;border:none;border-radius:10px;padding:13px 0;font-size:16px;font-weight:700;margin-bottom:10px;cursor:pointer;}
+    .d-btn:active{opacity:.8;}
+    .d-btn-speak{background:var(--topbar);color:#fff;}
+    .d-btn-stop{background:var(--amber);color:#1A1A1A;}
+    .d-unsupport{margin-top:14px;font-size:13px;color:var(--muted);text-align:center;}
+    .back{display:inline-block;margin-top:24px;color:var(--topbar);font-size:14px;text-decoration:none;}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="title">清泉看大片</span>
+    <span class="window" id="window"></span>
+    <span class="refresh-btn" id="refreshBtn">刷新</span>
+  </div>
+
+  <div class="wrap" id="wrap"></div>
+
+  <div class="footer">
+    <div class="slogan">爱护眼睛　大屏看大片</div>
+    <div class="ver" id="ver">清泉看大片 v1.0</div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var DATA_URL = 'https://smile502502.github.io/SMILE/todaymovie_data.json';
+      var CACHE_KEY = 'qingquan_data_v1';
+
+      // 内置兜底数据（与 2026-09-18 版一致，无网络时秒开）
+      var BUILTIN = {
+  "version": "2026-09-24",
+  "window": "2026-09-18 至 09-24",
+  "todayNew": [
+    {
+      "name": "捉妖记",
+      "channel": "CCTV6 电影频道",
+      "info": "华表奖2016年优秀故事片\n9/24（周四）12:28 播出",
+      "newToday": true
+    }
+  ],
+  "cctv6Movies": [
+    {
+      "name": "捉妖记",
+      "channel": "CCTV6 电影频道",
+      "info": "华表奖2016年优秀故事片；票房 24.4亿\n9/24（周四）12:28 播出",
+      "newToday": false
+    },
+    {
+      "name": "万里归途",
+      "channel": "CCTV6 电影频道",
+      "info": "华表奖2025年优秀故事片；票房 15.5亿\n9/23（周三）8:24 播出",
+      "newToday": false
+    },
+    {
+      "name": "智取威虎山",
+      "channel": "CCTV6 电影频道",
+      "info": "华表奖2016年优秀故事片\n9/22（周二）19:30 播出",
+      "newToday": false
+    },
+    {
+      "name": "凤凰琴",
+      "channel": "CCTV6 电影频道",
+      "info": "金鸡奖1994年\n9/20（周日）5:02 播出",
+      "newToday": false
+    },
+    {
+      "name": "叶问4：完结篇",
+      "channel": "CCTV6 电影频道",
+      "info": "票房 11.8亿\n9/19（周六）9:49 播出",
+      "newToday": false
+    }
+  ],
+  "itvMovies": [
+    {
+      "name": "镖人：风起大漠",
+      "channel": "江苏IPTV 限免",
+      "info": "票房 14.4亿\n9/23 起限免",
+      "newToday": false
+    },
+    {
+      "name": "得闲谨制",
+      "channel": "江苏IPTV 限免",
+      "info": "金鹿奖2026年最佳影片；票房 4.1亿\n9/23 起限免",
+      "newToday": false
+    },
+    {
+      "name": "死神来了：血脉诅咒",
+      "channel": "海南电信IPTV 限免",
+      "info": "2025年8月22日内地公映，票房 2.0亿\n9/9 起限免",
+      "newToday": false
+    }
+  ],
+  "dramas": [
+    {
+      "name": "主角",
+      "channel": "CCTV8 电视剧/辽宁卫视",
+      "info": "豆瓣8.2；茅盾文学奖（陈彦）\n9/14 首播第1集，9/23 播至第48集（完）",
+      "newToday": false
+    },
+    {
+      "name": "我是刑警",
+      "channel": "CCTV8 电视剧",
+      "info": "白玉兰奖2025年评委会奖；热播剧\n9/14 首播第1集，9/19 播至第38集",
+      "newToday": false
+    },
+    {
+      "name": "济公",
+      "channel": "河南卫视",
+      "info": "热播剧\n9/18、9/21-9/24 多集连播，9/24 播至第12集",
+      "newToday": false
+    },
+    {
+      "name": "济公游记",
+      "channel": "河南卫视",
+      "info": "豆瓣9.0\n9/18、9/21-9/22 上午/午后多集连播",
+      "newToday": false
+    },
+    {
+      "name": "北上",
+      "channel": "CCTV11 戏曲/黑龙江卫视",
+      "info": "茅盾文学奖（徐则臣）\n9/11 首播，9/18-9/24 连播，9/24 播至第38集",
+      "newToday": false
+    },
+    {
+      "name": "父母爱情",
+      "channel": "河北卫视",
+      "info": "飞天奖2015年；豆瓣9.3；热播剧\n9/18 播出",
+      "newToday": false
+    },
+    {
+      "name": "外交风云",
+      "channel": "山东卫视/深圳卫视",
+      "info": "金鹰奖2020年最佳电视剧\n9/18、9/24 各播1场",
+      "newToday": false
+    },
+    {
+      "name": "西游记",
+      "channel": "河南卫视/西藏卫视",
+      "info": "豆瓣9.7；热播剧\n9/19-9/24 多集连播",
+      "newToday": false
+    },
+    {
+      "name": "大决战",
+      "channel": "CCTV7 国防军事",
+      "info": "热播剧\n9/18-9/23 每天下午3集连播（第32-49集，完）",
+      "newToday": false
+    }
+  ]
+};
+      // ---- 时钟（北京时间，固定 UTC+8）----
+      function bjNow() { return new Date(Date.now() + 8 * 3600 * 1000); }
+      function bjHour() { return bjNow().getUTCHours(); }
+      function pad(n) { return (n < 10 ? '0' : '') + n; }
+      function bjDateStr() {
+        var d = bjNow();
+        return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate());
+      }
+      function yestDateStr() {
+        var d = new Date(bjNow().getTime() - 24 * 3600 * 1000);
+        return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate());
+      }
+      // 过期判定：10 点前数据日期>=昨天即最新；10 点后需>=今天
+      function isFresh(version) {
+        var today = bjDateStr(), yest = yestDateStr(), h = bjHour();
+        if (h < 10) return version >= yest;
+        return version >= today;
+      }
+
+      // 数据非最新警示条 + 刷新按钮闪烁（与 APK maybeAddStaleWarning 行为一致）
+      function updateStaleUI(version) {
+        var stale = version ? !isFresh(version) : false;
+        var banner = document.getElementById('staleWarn');
+        if (stale) {
+          if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'staleWarn';
+            banner.className = 'stale-warn';
+            banner.addEventListener('click', refresh);
+            wrap.parentNode.insertBefore(banner, wrap);
+          }
+          banner.innerHTML = '⚠ 数据非最新（截至 ' + version + '）<br>请点击右上角“刷新”获取最新数据';
+          refreshBtn.classList.add('refresh-blink');
+        } else {
+          if (banner) banner.parentNode.removeChild(banner);
+          refreshBtn.classList.remove('refresh-blink');
+        }
+      }
+
+      // ---- 本地缓存 ----
+      function cacheSave(data) {
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ data: data, ts: Date.now() }));
+        } catch (e) {}
+      }
+      function cacheLoad() {
+        try {
+          var raw = localStorage.getItem(CACHE_KEY);
+          if (!raw) return null;
+          var obj = JSON.parse(raw);
+          return obj && obj.data ? obj.data : null;
+        } catch (e) { return null; }
+      }
+
+      // ---- DOM ----
+      var wrap = document.getElementById('wrap');
+      var winEl = document.getElementById('window');
+      var verEl = document.getElementById('ver');
+      var refreshBtn = document.getElementById('refreshBtn');
+      var busy = false;
+
+      function fmtWindow(text) {
+        if (!text) return '';
+        var m = text.match(/(\d{4})-(\d{2})-(\d{2})\D+(\d{2})-(\d{2})/);
+        if (m) return m[1] + '.' + m[2] + '.' + m[3] + '-' + m[4] + '.' + m[5];
+        return text;
+      }
+
+      function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+
+      // 片名 → 海报文件名（与 APP 的 POSTER_MAP 一致）
+      var POSTER_MAP = {
+        '济公游记': 'jigongyouji.jpg',
+        '我是刑警': 'woshexingjing.jpg',
+        '主角': 'zhujue.jpg',
+        '叶问4：完结篇': 'yewen4.jpg',
+        '志愿军：浴血和平': 'zyj_yxhp.jpg',
+        '死侍2：我爱我家': 'sishi2.jpg',
+        '人生路不熟': 'rslbrs.jpg',
+        '志愿军：存亡之战': 'zyj_cwzz.jpg',
+        '东极岛': 'dongjidao.jpg',
+        '爱情神话': 'aiqingshenhua.jpg',
+        '志愿军：雄兵出击': 'zyj_xbcj.jpg',
+        '摩天营救': 'motianyingjiu.jpg',
+        '长津湖': 'changjinhu.jpg',
+        '长津湖之水门桥': 'changjinhu2.jpg',
+        '误判': 'wupan.jpg',
+        '飞驰人生3': 'chirensheng3.jpg',
+        '变形金刚：起源': 'bxjgqiyuan.jpg',
+        '震耳欲聋': 'zreyulong.jpg',
+        '雄狮少年': 'xongshishaonian.jpg',
+        '北上': 'beishang.jpg',
+        '父母爱情': 'fumuaiqing.jpg',
+        '天行健': 'tianxingjian.jpg',
+        '外交风云': 'waijiaofengyun.jpg',
+        '西游记': 'xiyouji.jpg',
+        '凤凰琴': 'fenghuangqin.jpg',
+        '济公': 'jigong.jpg',
+        '大决战': 'dajuezhan.jpg',
+        '宰相刘罗锅': 'zaixiangluoguo.jpg',
+        '藏海传': 'canghaichuan.jpg',
+        '生万物': 'shengwanwu.jpg',
+        '死神来了：血脉诅咒': 'shishenlai.jpg',
+        '智取威虎山': 'zhiquweihushan.jpg',
+        '万里归途': 'wanliguitu.jpg',
+        '捉妖记': 'zhuoyaoji.jpg',
+        '镖人：风起大漠': 'biaorenfengqi.jpg',
+        '得闲谨制': 'dexianjinzhi.jpg'
+      };
+
+      function cardHTML(item, isNewSection) {
+        var badge = item.newToday ? '<span class="badge-new">新增</span>' : '';
+        var cls = isNewSection ? 'card card-new' : 'card';
+        var poster = POSTER_MAP[item.name];
+        // 海报路径加版本参数，绕过任何旧缓存（SW 缓存、浏览器缓存）
+        var img = poster
+          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=11" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
+              encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
+              encodeURIComponent(item.info || '') + '\')"></div>'
+          : '<div class="poster-wrap"></div>';
+        var oncard = 'onclick="Qingquan.openDetail(\'' +
+              encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
+              encodeURIComponent(item.info || '') + '\')"';
+        return '<div class="' + cls + '" ' + oncard + '>' +
+          '<div class="card-head"><span class="card-name">' + escapeHtml(item.name) + '</span>' + badge + '</div>' +
+          img +
+          '<div class="card-channel">' + escapeHtml(item.channel || '') + '</div>' +
+          '<div class="card-hint">详情 ›</div>' +
+          '</div>';
+      }
+
+      function render(data) {
+        if (!data) return;
+        var html = '';
+        function sectionHTML(title, list, isNewSection) {
+          if (!list || !list.length) return '';
+          var h = '<div class="section"><div class="section-title">' + title + '</div><div class="grid">';
+          for (var i = 0; i < list.length; i++) {
+            h += cardHTML(list[i], isNewSection);
+          }
+          h += '</div></div>';
+          return h;
+        }
+        // 今日新增：为空也显示（0部）+ 占位提示，与 APK 行为一致
+        var newsCount = data.todayNew ? data.todayNew.length : 0;
+        if (newsCount > 0) {
+          html += sectionHTML('🔥 今日新增（' + newsCount + '部）', data.todayNew, true);
+        } else {
+          html += '<div class="section"><div class="section-title">🔥 今日新增（0部）</div>' +
+                  '<div class="no-new-tip">（今日无新增）</div></div>';
+        }
+        html += sectionHTML('🎬 电影大片（' + (data.cctv6Movies ? data.cctv6Movies.length : 0) + '部）', data.cctv6Movies, false);
+        html += sectionHTML('📺 电信ITV限免（' + (data.itvMovies ? data.itvMovies.length : 0) + '部）', data.itvMovies, false);
+        html += sectionHTML('🌟 高分剧集（' + (data.dramas ? data.dramas.length : 0) + '部）', data.dramas, false);
+        wrap.innerHTML = html || '<div class="empty">暂无数据</div>';
+        winEl.textContent = fmtWindow(data.window);
+        verEl.textContent = '清泉看大片 v1.0';
+        updateStaleUI(data.version);
+      }
+
+      // ---- 数据加载 ----
+      function applyData(data) {
+        render(data);
+        cacheSave(data);
+      }
+
+      function fetchLatest(manual) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', DATA_URL, true);
+        xhr.timeout = 10000;
+        xhr.onload = function () {
+          busy = false; refreshBtn.classList.remove('disabled');
+          if (xhr.status === 200) {
+            try {
+              var data = JSON.parse(xhr.responseText);
+              if (data && data.version) {
+                applyData(data);
+                if (manual) flash('已更新：数据版本 ' + data.version);
+                return;
+              }
+            } catch (e) {}
+          }
+          if (manual) flash('数据格式异常');
+        };
+        xhr.onerror = function () {
+          busy = false; refreshBtn.classList.remove('disabled');
+          if (manual) flash('网络异常，请稍后再试');
+        };
+        xhr.ontimeout = function () {
+          busy = false; refreshBtn.classList.remove('disabled');
+          if (manual) flash('网络超时，请稍后再试');
+        };
+        xhr.send();
+      }
+
+      function flash(msg) {
+        winEl.textContent = msg;
+        setTimeout(function () {
+          var d = cacheLoad();
+          if (d) winEl.textContent = fmtWindow(d.window);
+        }, 2500);
+      }
+
+      function refresh() {
+        if (busy) return;
+        // 北京时间 0:00-9:59 禁止刷新
+        if (bjHour() < 10) {
+          flash('数据更新中，请十点后刷新');
+          return;
+        }
+        busy = true; refreshBtn.classList.add('disabled');
+        render(cacheLoad() || BUILTIN); // 先秒开
+        fetchLatest(true);              // 异步拉最新，成功自动重渲染
+      }
+
+      // 启动流程
+      function init() {
+        var cached = cacheLoad();
+        if (cached) {
+          render(cached);
+          if (!isFresh(cached.version) && bjHour() >= 10) fetchLatest(false);
+        } else {
+          render(BUILTIN);
+          if (bjHour() >= 10) fetchLatest(false);
+        }
+      }
+
+      // ---- 朗读（speechSynthesis）----
+      // ---- 朗读文本预处理 ----
+      // 中文数字转换（年份/奖项 2025→二零二五、2015→二零一五，逐位读法）
+      function numToChinese(n) {
+        var digits = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+        var s = String(n);
+        if (s.length === 4) {
+          // 年份类 4 位数字按逐位读法：2025 → 二零二五
+          return digits[parseInt(s[0], 10)] + digits[parseInt(s[1], 10)] +
+                 digits[parseInt(s[2], 10)] + digits[parseInt(s[3], 10)];
+        }
+        return digits[parseInt(s, 10)];
+      }
+
+      function preprocessForTTS(text) {
+        if (!text) return '';
+        var s = text;
+        // CCTV-6 → CCTV六（连字符数字会被读"负"）；CCTV6/CCTV7/CCTV8/CCTV11/CCTV12 → 中文数字
+        s = s.replace(/CCTV-6/g, 'CCTV六').replace(/CCTV-8/g, 'CCTV八').replace(/CCTV-11/g, 'CCTV十一')
+             .replace(/CCTV6/g, 'CCTV六').replace(/CCTV7/g, 'CCTV七').replace(/CCTV8/g, 'CCTV八')
+             .replace(/CCTV11/g, 'CCTV十一').replace(/CCTV12/g, 'CCTV十二');
+        // 完整日期 2025-10-04 → 2025年10月4日（去月日补零）
+        s = s.replace(/(\d{4})-(\d{1,2})-(\d{1,2})/g, function (m, y, mo, d) {
+          return y + '年' + parseInt(mo, 10) + '月' + parseInt(d, 10) + '日';
+        });
+        // 斜线日期 9/15 → 9月15日（去补零，避免被读成分数）
+        s = s.replace(/(\d{1,2})\/(\d{1,2})/g, function (m, mo, d) {
+          return parseInt(mo, 10) + '月' + parseInt(d, 10) + '日';
+        });
+        // 时间 09:49 → 9点49分（去补零，避免"零九"）；分钟1-2位兼容（防旧数据"5:2"）
+        s = s.replace(/(\d{1,2}):(\d{1,2})/g, function (m, h, mi) {
+          return parseInt(h, 10) + '点' + parseInt(mi, 10) + '分';
+        });
+        // 平台名斜线 → 顿号
+        s = s.replace(/\//g, '、');
+        // 括号 → 逗号（保留内容）
+        s = s.replace(/[（）()]/g, '，');
+        // 4位年份/奖项数字（后不跟 年/月/日/点/分 等日期单位）→ 中文数字
+        // 注意：不用 lookbehind（旧 iOS Safari<16.4 不支持，会导致整页脚本解析失败）
+        s = s.replace(/(\d{4})(?![0-9年日月点分])(?=[^0-9]|$)/g, function (m, n, offset, str) {
+          if (offset > 0 && str.charAt(offset - 1) >= '0' && str.charAt(offset - 1) <= '9') return m;
+          return numToChinese(n);
+        });
+        // 单数字后跟量词（部/集/个/次/天/周/场/届/期/种/家/国/班，不含"月"避免破坏日期）→ 中文
+        s = s.replace(/(\d)(?=[部集个次天周场届期种家国班])(?![0-9])/g, function (m, n, offset, str) {
+          if (offset > 0 && str.charAt(offset - 1) >= '0' && str.charAt(offset - 1) <= '9') return m;
+          return numToChinese(n);
+        });
+        // 清理多余标点
+        s = s.replace(/。。/g, '。').replace(/，，/g, '，').replace(/，。/g, '。');
+        return s;
+      }
+
+      function speakTextOf(name, channel, info) {
+        var parts = [];
+        if (name) parts.push(name);
+        if (channel) parts.push('播出平台，' + channel);
+        if (info) parts.push(info.replace(/\n/g, '。'));
+        return preprocessForTTS(parts.join('。'));
+      }
+
+      var speechSupported = 'speechSynthesis' in window;
+      var currentSpeakText = '';
+
+      function speakNow() {
+        if (!speechSupported || !currentSpeakText) return;
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+        var u = new SpeechSynthesisUtterance(currentSpeakText);
+        u.lang = 'zh-CN';
+        u.rate = 1;
+        var voices = window.speechSynthesis.getVoices();
+        for (var i = 0; i < voices.length; i++) {
+          if (voices[i].lang && voices[i].lang.indexOf('zh') === 0) { u.voice = voices[i]; break; }
+        }
+        window.speechSynthesis.speak(u);
+      }
+
+      function stopSpeak() {
+        if (!speechSupported) return;
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+
+      // 详情页
+      window.Qingquan = {
+        openDetail: function (name, channel, info) {
+          var dec = function (s) { try { return decodeURIComponent(s); } catch (e) { return s; } };
+          var n = dec(name), c = dec(channel || ''), f = dec(info || '');
+          // 返回列表时停止朗读，避免后台继续播
+          currentSpeakText = speakTextOf(n, c, f);
+          var btns = speechSupported
+            ? '<div class="d-btns">' +
+              '<button class="d-btn d-btn-speak" onclick="Qingquan.speak()">🔊 朗读</button>' +
+              '<button class="d-btn d-btn-stop" onclick="Qingquan.stopSpeak()">⏹ 停止</button>' +
+              '</div>'
+            : '<div class="d-unsupport">当前浏览器不支持语音朗读</div>';
+          wrap.innerHTML =
+            '<div class="detail">' +
+            '<div class="d-title">' + escapeHtml(n) + '</div>' +
+            (c ? '<div class="d-channel">' + escapeHtml(c) + '</div>' : '') +
+            '<div class="d-info">' + escapeHtml(f) + '</div>' +
+            btns +
+            '<a class="back" href="javascript:void(0)" onclick="Qingquan.back()">← 返回列表</a>' +
+            '</div>';
+          // 进入详情页自动朗读（iOS 需在用户手势内触发；openDetail 本身来自点击，满足手势要求）
+          if (speechSupported) {
+            speakNow();
+          }
+        },
+        speak: function () { speakNow(); },
+        stopSpeak: function () { stopSpeak(); },
+        back: function () {
+          stopSpeak();  // 返回列表先停朗读
+          var cached = cacheLoad();
+          render(cached || BUILTIN);
+        }
+      };
+
+      // 刷新按钮
+      refreshBtn.addEventListener('click', refresh);
+
+      // 注册 Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js').catch(function () {});
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
