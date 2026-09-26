@@ -33,7 +33,12 @@ const CORE = [
   './posters/wanliguitu.jpg',
   './posters/zhuoyaoji.jpg',
   './posters/biaorenfengqi.jpg',
-  './posters/dexianjinzhi.jpg'
+  './posters/dexianjinzhi.jpg',
+  './posters/wushuang.jpg',
+  './posters/taihangshanshang.jpg',
+  './posters/dangxingfulaiqiaomen.jpg',
+  './posters/shuangzishashou.jpg',
+  './posters/saoheijuezhan.jpg'
 ];
 
 // 安装：预缓存核心资源
