@@ -1,5 +1,5 @@
 /* 清泉看大片 PWA Service Worker（子目录部署版） */
-const CACHE = 'qingquan-pwa-v23';
+const CACHE = 'qingquan-pwa-v24';
 const CORE = [
   './',
   './index.html',
@@ -38,7 +38,11 @@ const CORE = [
   './posters/taihangshanshang.jpg',
   './posters/dangxingfulaiqiaomen.jpg',
   './posters/shuangzishashou.jpg',
-  './posters/saoheijuezhan.jpg'
+  './posters/saoheijuezhan.jpg',
+  './posters/relie.jpg',
+  './posters/chenmoderongyao.jpg',
+  './posters/jiaofeng.jpg',
+  './posters/xinglai.jpg'
 ];
 
 // 安装：预缓存核心资源
