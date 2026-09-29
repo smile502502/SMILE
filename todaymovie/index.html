@@ -165,6 +165,20 @@
       var BUILTIN = {
   "version": "2026-09-29",
   "window": "2026-09-23 至 09-29",
+  "todayNew": [
+    {
+      "name": "三大队",
+      "channel": "东方卫视",
+      "info": "豆瓣7.2；秦昊、李乃文主演\n9/28（周一）东方卫视首播第1集；9/29播至第12集",
+      "newToday": true
+    },
+    {
+      "name": "沉默的荣耀",
+      "channel": "东方卫视/西藏卫视",
+      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/29重播第10-11集",
+      "newToday": true
+    }
+  ],
   "cctv6Movies": [
     {
       "name": "古董局中局",
@@ -428,7 +442,10 @@
         '醒来': 'xinglai.jpg',
         '交锋': 'jiaofeng.jpg',
         '古董局中局': 'gudongjuzhongju.jpg',
-        '三大队': 'sandadui.jpg'
+        '三大队': 'sandadui.jpg',
+        '双子杀手': 'shuangzishashou.jpg',
+        '当幸福来敲门': 'dangxingfulaiqiaomen.jpg',
+        '扫黑·决战': 'saoheijuezhan.jpg'
       };
 
       function cardHTML(item, isNewSection) {
@@ -437,7 +454,7 @@
         var poster = POSTER_MAP[item.name];
         // 海报路径加版本参数，绕过任何旧缓存（SW 缓存、浏览器缓存）
         var img = poster
-          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=16" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
+          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=17" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
               encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
               encodeURIComponent(item.info || '') + '\')"></div>'
           : '<div class="poster-wrap"></div>';
