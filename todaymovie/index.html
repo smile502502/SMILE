@@ -165,26 +165,6 @@
       var BUILTIN = {
   "version": "2026-09-29",
   "window": "2026-09-23 至 09-29",
-  "todayNew": [
-    {
-      "name": "古董局中局",
-      "channel": "CCTV6 电影频道",
-      "info": "票房 3.5亿；郭子健导演、雷佳音/李现/葛优主演\n9/28（周一）16:12 播出",
-      "newToday": false
-    },
-    {
-      "name": "三大队",
-      "channel": "东方卫视",
-      "info": "豆瓣7.2；秦昊、李乃文主演\n9/28（周一）5:44 东方卫视首播第1集",
-      "newToday": false
-    },
-    {
-      "name": "沉默的荣耀",
-      "channel": "东方卫视/西藏卫视",
-      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/29重播第10-11集",
-      "newToday": false
-    }
-  ],
   "cctv6Movies": [
     {
       "name": "古董局中局",
@@ -457,7 +437,7 @@
         var poster = POSTER_MAP[item.name];
         // 海报路径加版本参数，绕过任何旧缓存（SW 缓存、浏览器缓存）
         var img = poster
-          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=15" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
+          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=16" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
               encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
               encodeURIComponent(item.info || '') + '\')"></div>'
           : '<div class="poster-wrap"></div>';
