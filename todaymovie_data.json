@@ -9,6 +9,24 @@
       "newToday": true
     },
     {
+      "name": "寻秦记",
+      "channel": "江苏IPTV 限免",
+      "info": "票房 2.9亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
+      "name": "熊出没·年年有熊",
+      "channel": "江苏IPTV 限免",
+      "info": "票房 10.6亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
+      "name": "哪吒之魔童降世",
+      "channel": "江苏IPTV 限免",
+      "info": "华表奖2023年；票房 50.3亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
       "name": "三大队",
       "channel": "东方卫视",
       "info": "豆瓣7.2；秦昊、李乃文主演\n9/28（周一）东方卫视首播第1集；9/30播至第24集",
@@ -17,7 +35,13 @@
     {
       "name": "沉默的荣耀",
       "channel": "东方卫视/西藏卫视",
-      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/30播至第18集",
+      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/30播至第21集",
+      "newToday": true
+    },
+    {
+      "name": "老九门",
+      "channel": "江苏IPTV 限免",
+      "info": "热播剧\n9/30-10/14 江苏IPTV限免",
       "newToday": true
     }
   ],
@@ -119,6 +143,24 @@
       "channel": "江苏IPTV 限免",
       "info": "金鹿奖2026年最佳影片；票房 4.1亿\n9/23-9/29 江苏IPTV限免",
       "newToday": false
+    },
+    {
+      "name": "寻秦记",
+      "channel": "江苏IPTV 限免",
+      "info": "票房 2.9亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
+      "name": "熊出没·年年有熊",
+      "channel": "江苏IPTV 限免",
+      "info": "票房 10.6亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
+      "name": "哪吒之魔童降世",
+      "channel": "江苏IPTV 限免",
+      "info": "华表奖2023年；票房 50.3亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
     }
   ],
   "dramas": [
@@ -131,7 +173,7 @@
     {
       "name": "沉默的荣耀",
       "channel": "东方卫视/西藏卫视",
-      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/30播至第18集",
+      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/30播至第21集",
       "newToday": true
     },
     {
@@ -187,6 +229,12 @@
       "channel": "河南卫视/西藏卫视",
       "info": "豆瓣9.7；热播剧\n9/24-9/27 多集连播",
       "newToday": false
+    },
+    {
+      "name": "老九门",
+      "channel": "江苏IPTV 限免",
+      "info": "热播剧\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
     }
   ]
 }
