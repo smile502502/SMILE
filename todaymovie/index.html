@@ -173,6 +173,24 @@
       "newToday": true
     },
     {
+      "name": "寻秦记",
+      "channel": "江苏IPTV 限免",
+      "info": "票房 2.9亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
+      "name": "熊出没·年年有熊",
+      "channel": "江苏IPTV 限免",
+      "info": "票房 10.6亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
+      "name": "哪吒之魔童降世",
+      "channel": "江苏IPTV 限免",
+      "info": "华表奖2023年；票房 50.3亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
       "name": "三大队",
       "channel": "东方卫视",
       "info": "豆瓣7.2；秦昊、李乃文主演\n9/28（周一）东方卫视首播第1集；9/30播至第24集",
@@ -181,7 +199,13 @@
     {
       "name": "沉默的荣耀",
       "channel": "东方卫视/西藏卫视",
-      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/30播至第18集",
+      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/30播至第21集",
+      "newToday": true
+    },
+    {
+      "name": "老九门",
+      "channel": "江苏IPTV 限免",
+      "info": "热播剧\n9/30-10/14 江苏IPTV限免",
       "newToday": true
     }
   ],
@@ -283,6 +307,24 @@
       "channel": "江苏IPTV 限免",
       "info": "金鹿奖2026年最佳影片；票房 4.1亿\n9/23-9/29 江苏IPTV限免",
       "newToday": false
+    },
+    {
+      "name": "寻秦记",
+      "channel": "江苏IPTV 限免",
+      "info": "票房 2.9亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
+      "name": "熊出没·年年有熊",
+      "channel": "江苏IPTV 限免",
+      "info": "票房 10.6亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
+    },
+    {
+      "name": "哪吒之魔童降世",
+      "channel": "江苏IPTV 限免",
+      "info": "华表奖2023年；票房 50.3亿\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
     }
   ],
   "dramas": [
@@ -295,7 +337,7 @@
     {
       "name": "沉默的荣耀",
       "channel": "东方卫视/西藏卫视",
-      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/30播至第18集",
+      "info": "豆瓣8.2；于和伟主演\n9/27（周日）东方卫视首播第1集；9/30播至第21集",
       "newToday": true
     },
     {
@@ -351,6 +393,12 @@
       "channel": "河南卫视/西藏卫视",
       "info": "豆瓣9.7；热播剧\n9/24-9/27 多集连播",
       "newToday": false
+    },
+    {
+      "name": "老九门",
+      "channel": "江苏IPTV 限免",
+      "info": "热播剧\n9/30-10/14 江苏IPTV限免",
+      "newToday": true
     }
   ]
 };
@@ -430,63 +478,37 @@
 
       // 片名 → 海报文件名（与 APP 的 POSTER_MAP 一致）
       var POSTER_MAP = {
-        '济公游记': 'jigongyouji.jpg',
-        '我是刑警': 'woshexingjing.jpg',
-        '主角': 'zhujue.jpg',
-        '叶问4：完结篇': 'yewen4.jpg',
-        '志愿军：浴血和平': 'zyj_yxhp.jpg',
-        '死侍2：我爱我家': 'sishi2.jpg',
-        '人生路不熟': 'rslbrs.jpg',
-        '志愿军：存亡之战': 'zyj_cwzz.jpg',
-        '东极岛': 'dongjidao.jpg',
-        '爱情神话': 'aiqingshenhua.jpg',
-        '志愿军：雄兵出击': 'zyj_xbcj.jpg',
-        '摩天营救': 'motianyingjiu.jpg',
-        '长津湖': 'changjinhu.jpg',
-        '长津湖之水门桥': 'changjinhu2.jpg',
-        '误判': 'wupan.jpg',
-        '飞驰人生3': 'chirensheng3.jpg',
-        '变形金刚：起源': 'bxjgqiyuan.jpg',
+        '浪浪人生': 'langlangrensheng.jpg',
         '震耳欲聋': 'zreyulong.jpg',
-        '雄狮少年': 'xongshishaonian.jpg',
-        '北上': 'beishang.jpg',
-        '父母爱情': 'fumuaiqing.jpg',
-        '天行健': 'tianxingjian.jpg',
-        '外交风云': 'waijiaofengyun.jpg',
-        '西游记': 'xiyouji.jpg',
-        '凤凰琴': 'fenghuangqin.jpg',
-        '济公': 'jigong.jpg',
-        '大决战': 'dajuezhan.jpg',
-        '宰相刘罗锅': 'zaixiangluoguo.jpg',
-        '藏海传': 'canghaichuan.jpg',
-        '生万物': 'shengwanwu.jpg',
-        '死神来了：血脉诅咒': 'shishenlai.jpg',
-        '智取威虎山': 'zhiquweihushan.jpg',
-        '万里归途': 'wanliguitu.jpg',
-        '捉妖记': 'zhuoyaoji.jpg',
-        '镖人：风起大漠': 'biaorenfengqi.jpg',
-        '得闲谨制': 'dexianjinzhi.jpg',
-        '无双': 'wushuang.jpg',
-        '太行山上': 'taihangshanshang.jpg',
-        '莫斯科行动': 'mosikehangdong.jpg',
-        '扫毒2：天地对决': 'saodu2.jpg',
-        '惊蛰无声': 'jingzhewusheng.jpg',
-        '这么多年': 'zhemoduonian.jpg',
-        '生命树': 'shengmingshu.jpg',
-        '我的前半生': 'wodeqianbansheng.jpg',
-        '热烈': 'relie.jpg',
-        '沉默的荣耀': 'chenmoderongyao.jpg',
-        '醒来': 'xinglai.jpg',
-        '交锋': 'jiaofeng.jpg',
+        '王牌逗王牌': 'wangpaidouwangpai.jpg',
+        '唐伯虎点秋香': 'tangbohudianxiang.jpg',
         '古董局中局': 'gudongjuzhongju.jpg',
-        '三大队': 'sandadui.jpg',
+        '热烈': 'relie.jpg',
+        '扫黑·决战': 'saoheijuezhan.jpg',
         '双子杀手': 'shuangzishashou.jpg',
         '当幸福来敲门': 'dangxingfulaiqiaomen.jpg',
-        '扫黑·决战': 'saoheijuezhan.jpg'
-        '浪浪人生': 'langlangrensheng.jpg',
-  '王牌逗王牌': 'wangpaidouwangpai.jpg',
-  '唐伯虎点秋香': 'tangbohudianxiang.jpg',
-  '狂飙': 'kuangbiao.jpg',
+        '无双': 'wushuang.jpg',
+        '太行山上': 'taihangshanshang.jpg',
+        '捉妖记': 'zhuoyaoji.jpg',
+        '智取威虎山': 'zhiquweihushan.jpg',
+        '凤凰琴': 'fenghuangqin.jpg',
+        '镖人：风起大漠': 'biaorenfengqi.jpg',
+        '得闲谨制': 'dexianjinzhi.jpg',
+        '寻秦记': 'xunqinji.jpg',
+        '熊出没·年年有熊': 'xiongchumeniannianyouxiong.jpg',
+        '哪吒之魔童降世': 'nezhamotongjiangshi.jpg',
+        '三大队': 'sandadui.jpg',
+        '沉默的荣耀': 'chenmoderongyao.jpg',
+        '狂飙': 'kuangbiao.jpg',
+        '生命树': 'shengmingshu.jpg',
+        '交锋': 'jiaofeng.jpg',
+        '济公': 'jigong.jpg',
+        '济公游记': 'jigongyouji.jpg',
+        '北上': 'beishang.jpg',
+        '父母爱情': 'fumuaiqing.jpg',
+        '外交风云': 'waijiaofengyun.jpg',
+        '西游记': 'xiyouji.jpg',
+        '老九门': 'laojiumen.jpg',
 };
 
       function cardHTML(item, isNewSection) {
@@ -495,7 +517,7 @@
         var poster = POSTER_MAP[item.name];
         // 海报路径加版本参数，绕过任何旧缓存（SW 缓存、浏览器缓存）
         var img = poster
-          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=18" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
+          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=19" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
               encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
               encodeURIComponent(item.info || '') + '\')"></div>'
           : '<div class="poster-wrap"></div>';
