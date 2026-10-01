@@ -99,17 +99,26 @@
       border-radius:8px;overflow:hidden;background:#F0F0F0;
       margin-bottom:6px;
     }
-    .poster-wrap img{
-      position:absolute;top:0;left:0;width:100%;height:100%;
-      object-fit:cover;
+    .poster-wrap{
+      position:relative;width:100%;
+      padding-top:150%;
+      border-radius:8px;overflow:hidden;background:#3B1010;
+      margin-bottom:6px;
     }
     .poster-text{
       position:absolute;top:0;left:0;width:100%;height:100%;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      background:#14142b;
+      display:flex;flex-direction:row;align-items:center;justify-content:center;
+      background:#3B1010;
     }
-    .poster-text .pt-name{color:#fff;font-size:22px;font-weight:bold;text-align:center;line-height:1.3;padding:0 8px;}
-    .poster-text .pt-mark{color:#c0392b;font-size:13px;margin-top:10px;}
+    .poster-text .pt-name{
+      color:#F4D03F;font-size:24px;font-weight:bold;
+      writing-mode:vertical-rl;text-orientation:upright;
+      line-height:1.5;letter-spacing:4px;
+    }
+    .poster-text .pt-mark{
+      position:absolute;bottom:8px;left:0;width:100%;
+      color:#FF5252;font-size:12px;text-align:center;
+    }
 
     /* 频道行：独立固定高度，保证左右两列对齐 */
     .card-channel{
@@ -483,51 +492,12 @@
         });
       }
 
-      // 片名 → 海报文件名（与 APP 的 POSTER_MAP 一致）
-      var POSTER_MAP = {
-        '浪浪人生': 'langlangrensheng.jpg',
-        '震耳欲聋': 'zreyulong.jpg',
-        '王牌逗王牌': 'wangpaidouwangpai.jpg',
-        '唐伯虎点秋香': 'tangbohudianxiang.jpg',
-        '古董局中局': 'gudongjuzhongju.jpg',
-        '热烈': 'relie.jpg',
-        '扫黑·决战': 'saoheijuezhan.jpg',
-        '双子杀手': 'shuangzishashou.jpg',
-        '当幸福来敲门': 'dangxingfulaiqiaomen.jpg',
-        '无双': 'wushuang.jpg',
-        '太行山上': 'taihangshanshang.jpg',
-        '捉妖记': 'zhuoyaoji.jpg',
-        '智取威虎山': 'zhiquweihushan.jpg',
-        '凤凰琴': 'fenghuangqin.jpg',
-        '镖人：风起大漠': 'biaorenfengqi.jpg',
-        '得闲谨制': 'dexianjinzhi.jpg',
-        '寻秦记': 'xunqinji.jpg',
-        '熊出没·年年有熊': 'xiongchumeniannianyouxiong.jpg',
-        '哪吒之魔童降世': 'nezhamotongjiangshi.jpg',
-        '狂飙': 'kuangbiao.jpg',
-        '生命树': 'shengmingshu.jpg',
-        '交锋': 'jiaofeng.jpg',
-        '济公': 'jigong.jpg',
-        '济公游记': 'jigongyouji.jpg',
-        '北上': 'beishang.jpg',
-        '父母爱情': 'fumuaiqing.jpg',
-        '外交风云': 'waijiaofengyun.jpg',
-        '西游记': 'xiyouji.jpg',
-        '老九门': 'laojiumen.jpg',
-};
-
       function cardHTML(item, isNewSection) {
         var badge = item.newToday ? '<span class="badge-new">新增</span>' : '';
         var cls = isNewSection ? 'card card-new' : 'card';
-        var poster = POSTER_MAP[item.name];
-        // 海报路径加版本参数，绕过任何旧缓存（SW 缓存、浏览器缓存）
-        var img = poster
-          ? '<div class="poster-wrap"><img src="posters/' + poster + '?v=20" alt="' + escapeHtml(item.name) + '" onclick="event.stopPropagation();Qingquan.openDetail(\'' +
-              encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
-              encodeURIComponent(item.info || '') + '\')"></div>'
-          : '<div class="poster-wrap"><div class="poster-text"><div class="pt-name">' + escapeHtml(item.name) + '</div>' +
-              (item.newToday ? '<div class="pt-mark">今日新增</div>' : '') +
-              '</div></div>';
+        var img = '<div class="poster-wrap"><div class="poster-text"><div class="pt-name">' + escapeHtml(item.name) + '</div>' +
+            (item.newToday ? '<div class="pt-mark">今日新增</div>' : '') +
+            '</div></div>';
         var oncard = 'onclick="Qingquan.openDetail(\'' +
               encodeURIComponent(item.name) + '\',\'' + encodeURIComponent(item.channel || '') + '\',\'' +
               encodeURIComponent(item.info || '') + '\')"';

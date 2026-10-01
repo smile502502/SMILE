@@ -1,50 +1,12 @@
 /* 清泉看大片 PWA Service Worker（子目录部署版） */
-const CACHE = 'qingquan-pwa-v31';
+const CACHE = 'qingquan-pwa-v32';
 const CORE = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './icon-180.png',
-  './posters/aiqingshenhua.jpg',
-  './posters/beishang.jpg',
-    './posters/changjinhu.jpg',
-  './posters/changjinhu2.jpg',
-    './posters/dongjidao.jpg',
-  './posters/fumuaiqing.jpg',
-  './posters/jigongyouji.jpg',
-  './posters/motianyingjiu.jpg',
-        './posters/waijiaofengyun.jpg',
-  './posters/woshexingjing.jpg',
-    './posters/xiyouji.jpg',
-  './posters/fenghuangqin.jpg',
-  './posters/jigong.jpg',
-  './posters/dajuezhan.jpg',
-  './posters/zaixiangluoguo.jpg',
-  './posters/canghaichuan.jpg',
-  './posters/shengwanwu.jpg',
-  './posters/shisshenlai.jpg',
-    './posters/yewen4.jpg',
-  './posters/zhujue.jpg',
-  './posters/zreyulong.jpg',
-    './posters/zyj_xbcj.jpg',
-    './posters/zhiquweihushan.jpg',
-  './posters/wanliguitu.jpg',
-  './posters/zhuoyaoji.jpg',
-  './posters/biaorenfengqi.jpg',
-  './posters/dexianjinzhi.jpg',
-  './posters/wushuang.jpg',
-  './posters/taihangshanshang.jpg',
-  './posters/dangxingfulaiqiaomen.jpg',
-  './posters/shuangzishashou.jpg',
-  './posters/saoheijuezhan.jpg',
-  './posters/relie.jpg',
-  './posters/chenmoderongyao.jpg',
-  './posters/jiaofeng.jpg',
-  './posters/xinglai.jpg',
-  './posters/gudongjuzhongju.jpg',
-  './posters/sandadui.jpg'
+  './icon-180.png'
 ];
 
 // 安装：预缓存核心资源
@@ -80,22 +42,6 @@ self.addEventListener('fetch', (event) => {
           throw new Error('bad resp');
         })
         .catch(() => caches.match(event.request).then((m) => m || caches.match('./index.html')))
-    );
-    return;
-  }
-
-  // 海报图片：网络优先，确保实时从 GitHub 加载（避免旧缓存导致空白）
-  if (url.pathname.indexOf('/posters/') !== -1) {
-    event.respondWith(
-      fetch(event.request)
-        .then((resp) => {
-          if (resp && resp.ok) {
-            const copy = resp.clone();
-            caches.open(CACHE).then((cache) => cache.put(event.request, copy));
-          }
-          return resp;
-        })
-        .catch(() => caches.match(event.request))
     );
     return;
   }
