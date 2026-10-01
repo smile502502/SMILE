@@ -1,5 +1,5 @@
-/* 清泉看大片 PWA Service Worker（子目录部署版） */
-const CACHE = 'qingquan-pwa-v34';
+/* 清泉看大片 PWA Service Worker（子目录部署版）v35：HTML 网络优先，旧缓存自动清理 */
+const CACHE = 'qingquan-pwa-v35';
 const CORE = [
   './',
   './index.html',
@@ -25,7 +25,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 取数：网络优先、失败回退缓存（JSON 实时性优先）
+// 取数：静态资源网络优先（HTML/JSON）、失败回退缓存；其余资源缓存优先
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
@@ -46,7 +46,27 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 静态资源：缓存优先，后台更新
+  // HTML 文档请求：网络优先，失败回退缓存（确保页面始终拿到最新版本）
+  const isNavigate = event.request.mode === 'navigate';
+  const isHtml = url.origin === location.origin &&
+    (url.pathname === '/' || url.pathname.endsWith('index.html'));
+  if (isNavigate || isHtml) {
+    event.respondWith(
+      fetch(event.request)
+        .then((resp) => {
+          if (resp && resp.ok) {
+            const copy = resp.clone();
+            caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+            return resp;
+          }
+          throw new Error('bad resp');
+        })
+        .catch(() => caches.match(event.request).then((m) => m || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // 静态资源（图标/manifest）：缓存优先，后台更新
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const fetched = fetch(event.request)
