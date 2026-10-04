@@ -205,6 +205,12 @@
       "channel": "西藏卫视",
       "info": "飞天奖2022年优秀电视剧奖；白玉兰奖2023年评委会大奖；豆瓣7.8\n10/4（周日）西藏卫视首播第1集",
       "newToday": true
+    },
+    {
+      "name": "济公",
+      "channel": "河南卫视",
+      "info": "豆瓣9.4（1985年游本昌经典）；游本昌主演\n10/4（周日）河南卫视开播第1集",
+      "newToday": true
     }
   ],
   "cctv6Movies": [
@@ -323,12 +329,6 @@
       "newToday": false
     },
     {
-      "name": "智取威虎山",
-      "channel": "CCTV6 电影频道",
-      "info": "华表奖2016年优秀故事片\n9/26（周五）4:24 播出；9/29（周二）重播",
-      "newToday": false
-    },
-    {
       "name": "泰坦尼克号",
       "channel": "CCTV6 电影频道",
       "info": "奥斯卡1998年最佳影片；豆瓣TOP250第3名（豆瓣9.4）；詹姆斯·卡梅隆导演、莱昂纳多/凯特·温斯莱特主演\n10/1（周四）22:22 播出（上）；23:00 播出（下）",
@@ -383,7 +383,7 @@
     {
       "name": "三大队",
       "channel": "东方卫视",
-      "info": "豆瓣7.2；秦昊、李乃文主演\n9/28（周一）东方卫视首播第1集；9/30播至第24集",
+      "info": "豆瓣7.2；秦昊、李乃文主演\n9/29（周二）东方卫视首播第1集；9/30播至第12集",
       "newToday": false
     },
     {
@@ -425,26 +425,8 @@
     {
       "name": "济公",
       "channel": "河南卫视",
-      "info": "热播剧\n9/28-10/3 多集连播",
-      "newToday": false
-    },
-    {
-      "name": "济公游记",
-      "channel": "河南卫视",
-      "info": "豆瓣9.0\n9/29-10/4 多集连播",
-      "newToday": false
-    },
-    {
-      "name": "父母爱情",
-      "channel": "河北卫视/湖北卫视",
-      "info": "飞天奖2015年；豆瓣9.3；热播剧\n9/25河北卫视播出；9/29-10/4湖北卫视连播",
-      "newToday": false
-    },
-    {
-      "name": "外交风云",
-      "channel": "山东卫视",
-      "info": "金鹰奖2020年最佳电视剧\n9/25播出；10/1-10/2播出",
-      "newToday": false
+      "info": "豆瓣9.4（1985年游本昌经典）；游本昌主演\n10/4（周日）河南卫视开播第1集",
+      "newToday": true
     }
   ]
 };
@@ -703,11 +685,22 @@
         return first;
       }
 
-      // 从详情信息提取第一个"月/日"的日号（如 10/1 → 1号、9/30 → 30号）
+      // 从详情信息提取朗读日号：只取窗口内（今天-6天 ~ 今天）的日期，避免读窗口外旧日期
+      // （如"9/25播完"的25号已出窗口，应跳过；交锋→10/4"当天"）
       function dayNoOf(info) {
         if (!info) return '';
-        var dm = String(info).match(/(\d{1,2})\/(\d{1,2})/);
-        if (dm) return parseInt(dm[2], 10) + '号';
+        var now = bjNow();
+        var start = new Date(now.getTime() - 6 * 24 * 3600 * 1000);
+        var year = now.getUTCFullYear();
+        var re = /(\d{1,2})\/(\d{1,2})/g, m;
+        while ((m = re.exec(String(info))) !== null) {
+          var mo = parseInt(m[1], 10), d = parseInt(m[2], 10);
+          var dt = new Date(Date.UTC(year, mo - 1, d));
+          if (dt.getTime() >= start.getTime() && dt.getTime() <= now.getTime()) return d + '号';
+        }
+        // 全部在窗口外：兜底取第一个日期
+        var f = String(info).match(/(\d{1,2})\/(\d{1,2})/);
+        if (f) return parseInt(f[2], 10) + '号';
         return '';
       }
 
