@@ -716,6 +716,26 @@
       var speakTimer = null;
       var speakCancelled = false;
 
+      // 优先选柔美中文女声（晓晓/慧慧/瑶瑶/婷婷等）；找不到时返回 null 让系统用默认中文声
+      function pickFemaleVoice() {
+        if (!speechSupported) return null;
+        var voices = [];
+        try { voices = window.speechSynthesis.getVoices() || []; } catch (e) { return null; }
+        var zh = [];
+        for (var i = 0; i < voices.length; i++) {
+          var v = voices[i];
+          if (v && v.lang && v.lang.toLowerCase().indexOf('zh') === 0) zh.push(v);
+        }
+        if (!zh.length) return null;
+        var keys = ['xiaoxiao', 'yaoyao', 'huihui', 'xiaoyan', 'tingting', 'female', '女', '晓', '瑶', '慧', '婷婷', '丽', '薇'];
+        for (var k = 0; k < keys.length; k++) {
+          for (var j = 0; j < zh.length; j++) {
+            if (zh[j].name && zh[j].name.toLowerCase().indexOf(keys[k]) !== -1) return zh[j];
+          }
+        }
+        return zh[0];
+      }
+
       // 朗读遥控语音序列：先"请按下语音遥控键"，停顿2秒后读"我要看+台名+日号+播出的+片名"
       function speakNow() {
         if (!speechSupported || !currentSpeakText) return;
@@ -725,11 +745,10 @@
         function buildUtterance(text) {
           var u = new SpeechSynthesisUtterance(text);
           u.lang = 'zh-CN';
-          u.rate = 1;
-          var voices = window.speechSynthesis.getVoices();
-          for (var i = 0; i < voices.length; i++) {
-            if (voices[i].lang && voices[i].lang.indexOf('zh') === 0) { u.voice = voices[i]; break; }
-          }
+          u.rate = 0.92;   // 语速略缓，更柔和
+          u.pitch = 1.15;  // 音调略高，偏女声
+          var fv = pickFemaleVoice();
+          if (fv) u.voice = fv;
           return u;
         }
         var u1 = buildUtterance('请按下语音遥控键。');

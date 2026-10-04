@@ -1,5 +1,5 @@
-/* 清泉看大片 PWA Service Worker（子目录部署版）v36：HTML 网络优先，旧缓存自动清理 */
-const CACHE = 'qingquan-pwa-v36';
+/* 清泉看大片 PWA Service Worker（子目录部署版）v37：HTML 网络优先，旧缓存自动清理 */
+const CACHE = 'qingquan-pwa-v37';
 const CORE = [
   './',
   './index.html',
