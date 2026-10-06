@@ -8,45 +8,178 @@
 body { font-family: sans-serif; margin: 0; padding: 10px; background: #1a0a0a; color: #f0e0c0; }
 h1 { color: #F4D03F; text-align: center; font-size: 18px; }
 h2 { color: #F4D03F; font-size: 15px; border-bottom: 1px solid #3B1010; padding-bottom: 3px; }
-.movie { display: inline-block; width: 45%; margin: 5px; padding: 10px; background: #2a1010; border-radius: 6px; vertical-align: top; }
-.poster { width: 120px; height: 180px; background: #3B1010; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; border-radius: 4px; }
-.poster-text { writing-mode: vertical-rl; text-orientation: upright; color: #F4D03F; font-size: 18px; font-weight: bold; }
+.movie { display: inline-block; width: 45%; margin: 5px; padding: 10px; background: #2a1010; border-radius: 6px; vertical-align: top; cursor: pointer; }
+.movie:active { background: #3a1818; }
+.poster { width: 120px; height: 160px; background: #3B1010; display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; border-radius: 4px; }
+.poster-text { writing-mode: vertical-rl; text-orientation: upright; color: #F4D03F; font-size: 18px; font-weight: bold; letter-spacing: 2px; }
 .new-tag { color: #FF5252; font-size: 11px; text-align: center; }
 .info { font-size: 12px; line-height: 1.4; }
 .channel { color: #F4D03F; }
+.name { font-size: 13px; font-weight: bold; text-align: center; margin: 2px 0; }
+/* 详情层 */
+.overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; }
+.detail { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 90%; max-width: 400px; background: #2a1010; border-radius: 10px; padding: 15px; text-align: center; }
+.detail-name { color: #F4D03F; font-size: 20px; font-weight: bold; margin-bottom: 8px; }
+.detail-poster { width: 100px; height: 140px; background: #3B1010; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; border-radius: 4px; }
+.detail-poster-text { writing-mode: vertical-rl; text-orientation: upright; color: #F4D03F; font-size: 16px; font-weight: bold; }
+.detail-info { font-size: 13px; line-height: 1.6; text-align: left; margin: 10px 0; white-space: pre-line; }
+.detail-channel { color: #F4D03F; font-size: 14px; margin-bottom: 5px; }
+.btn { display: inline-block; padding: 10px 24px; margin: 5px; border-radius: 8px; font-size: 15px; cursor: pointer; border: none; }
+.btn-speak { background: #F4D03F; color: #1a0a0a; font-weight: bold; }
+.btn-close { background: #555; color: #fff; }
+.btn:active { opacity: 0.7; }
+.speaking { color: #F4D03F; font-size: 12px; margin-top: 5px; }
 </style>
 </head>
 <body>
 <h1>清泉看大片</h1>
 <p style="text-align:center;color:#d0c0a0;font-size:12px;">免费看大片_20261006_央视CCTV卫视IPTV今天今晚</p>
 <div id="content">加载中...</div>
+
+<!-- 详情层 -->
+<div class="overlay" id="overlay" onclick="closeDetail(event)">
+  <div class="detail" id="detailBox"></div>
+</div>
+
 <script>
+var allItems = [];
+var todayStr = '20261006';
+
+// 台名转换：卫视/ITV用全名，央视改为"央视X频道"
+function getVoiceChannel(ch) {
+  ch = ch.replace(/\s+/g, '');
+  // 央视：CCTV6 电影频道 → 央视6频道；CCTV-8 电视剧 → 央视8频道
+  var m = ch.match(/CCTV-?(\d+)/);
+  if (m) return '央视' + parseInt(m[1]) + '频道';
+  // ITV限免：江苏ITV限免 → 江苏ITV限免
+  // 卫视：东方卫视 → 东方卫视
+  return ch.replace('电视剧', '').replace('电影频道', '').replace('综合', '').replace('社会与法', '').trim() || ch;
+}
+
+// 从info第二行提取日号（窗口内才读）
+function getVoiceDate(info) {
+  var lines = info.split('\n');
+  if (lines.length < 2) return '';
+  var line2 = lines[1];
+  // 匹配 M/D 或 MM/DD 格式
+  var m = line2.match(/(\d{1,2})\/(\d{1,2})/);
+  if (!m) return '';
+  var month = parseInt(m[1]);
+  var day = parseInt(m[2]);
+  // 窗口判定：今天=10/6，窗口=10/6及前6天（9/30-10/6）
+  // 构建完整日期字符串比较
+  var dateStr = '2026' + (month < 10 ? '0' + month : month) + (day < 10 ? '0' + day : day);
+  var winStart = '20260930'; // 前6天
+  var winEnd = '20261006';
+  if (dateStr < winStart || dateStr > winEnd) return '';
+  return day + '号';
+}
+
+// 两段式朗读
+var tts = window.speechSynthesis;
+var ttsTimer = null;
+
+function speak(item) {
+  if (!tts) { alert('浏览器不支持语音合成'); return; }
+  tts.cancel();
+  clearTimeout(ttsTimer);
+
+  var chName = getVoiceChannel(item.channel);
+  var dateStr = getVoiceDate(item.info);
+  var guide = '请按语音遥控键';
+  var cmd = '我要看' + (dateStr ? dateStr : '') + chName + '播出的' + item.name;
+
+  // 选柔美女声
+  var voices = tts.getVoices();
+  var zhVoice = null;
+  if (voices && voices.length) {
+    var femaleKeys = ['xiaoxiao', 'xiaoyan', 'yaoyao', 'huihui', 'tingting', 'female', '女声', '晓', '瑶', '慧', '婷'];
+    var zhVoices = voices.filter(function(v) {
+      var l = (v.lang || '').toLowerCase();
+      return l.indexOf('zh') >= 0 || l.indexOf('cmn') >= 0;
+    });
+    for (var k of femaleKeys) {
+      for (var v of zhVoices) {
+        if ((v.name || '').toLowerCase().indexOf(k) >= 0) { zhVoice = v; break; }
+      }
+      if (zhVoice) break;
+    }
+    if (!zhVoice && zhVoices.length) zhVoice = zhVoices[0];
+  }
+
+  // 第一段：引导语
+  var u1 = new SpeechSynthesisUtterance(guide);
+  if (zhVoice) u1.voice = zhVoice;
+  u1.lang = 'zh-CN';
+  u1.pitch = 1.15; u1.rate = 0.92;
+
+  // 第二段：指令（延时1秒）
+  var u2 = new SpeechSynthesisUtterance(cmd);
+  if (zhVoice) u2.voice = zhVoice;
+  u2.lang = 'zh-CN';
+  u2.pitch = 1.15; u2.rate = 0.92;
+
+  u1.onend = function() {
+    ttsTimer = setTimeout(function() { tts.speak(u2); }, 1000);
+  };
+
+  tts.speak(u1);
+}
+
+function showDetail(item) {
+  var lines = item.info.split('\n');
+  var html = '<div class="detail-poster"><div class="detail-poster-text">' + item.name + '</div></div>';
+  html += '<div class="detail-name">' + item.name + '</div>';
+  html += '<div class="detail-channel">' + item.channel + '</div>';
+  html += '<div class="detail-info">' + item.info + '</div>';
+  html += '<button class="btn btn-speak" onclick="speak(allItems[' + allItems.indexOf(item) + '])">🔊 朗读</button>';
+  html += '<button class="btn btn-close" onclick="closeDetail()">关闭</button>';
+  html += '<div class="speaking" id="speakStatus"></div>';
+  document.getElementById('detailBox').innerHTML = html;
+  document.getElementById('overlay').style.display = 'block';
+}
+
+function closeDetail(e) {
+  if (e && e.target.id !== 'overlay') return;
+  if (tts) tts.cancel();
+  clearTimeout(ttsTimer);
+  document.getElementById('overlay').style.display = 'none';
+}
+
 fetch('todaymovie_data.json').then(r=>r.json()).then(data=>{
+  allItems = [];
   var html='<h2>今日新增</h2><div style="text-align:center;">';
   data.todayNew.forEach(function(item){
-    var lines=item.info.split('\n');
-    html+='<div class="movie"><div class="poster"><div class="poster-text">'+item.name+'</div></div><div class="new-tag">今日新增</div><div class="info"><span class="channel">'+item.channel+'</span><br>'+lines[0]+'<br>'+lines[1]+'</div></div>';
+    allItems.push(item);
+    var idx = allItems.length - 1;
+    html+='<div class="movie" onclick="showDetail(allItems['+idx+'])"><div class="poster"><div class="poster-text">'+item.name+'</div></div><div class="new-tag">今日新增</div><div class="name">'+item.name+'</div><div class="info"><span class="channel">'+item.channel+'</span></div></div>';
   });
   html+='</div><h2>电影大片</h2><div style="text-align:center;">';
   data.cctv6Movies.forEach(function(item){
     if(!item.newToday){
-      var lines=item.info.split('\n');
-      html+='<div class="movie"><div class="poster"><div class="poster-text">'+item.name+'</div></div><div class="info"><span class="channel">'+item.channel+'</span><br>'+lines[0]+'<br>'+lines[1]+'</div></div>';
+      allItems.push(item);
+      var idx = allItems.length - 1;
+      html+='<div class="movie" onclick="showDetail(allItems['+idx+'])"><div class="poster"><div class="poster-text">'+item.name+'</div></div><div class="name">'+item.name+'</div><div class="info"><span class="channel">'+item.channel+'</span></div></div>';
     }
   });
   html+='</div><h2>ITV限免影视</h2><div style="text-align:center;">';
   data.itvMovies.forEach(function(item){
-    var lines=item.info.split('\n');
-    html+='<div class="movie"><div class="poster"><div class="poster-text">'+item.name+'</div></div><div class="info"><span class="channel">'+item.channel+'</span><br>'+lines[0]+'<br>'+lines[1]+'</div></div>';
+    allItems.push(item);
+    var idx = allItems.length - 1;
+    html+='<div class="movie" onclick="showDetail(allItems['+idx+'])"><div class="poster"><div class="poster-text">'+item.name+'</div></div><div class="name">'+item.name+'</div><div class="info"><span class="channel">'+item.channel+'</span></div></div>';
   });
   html+='</div><h2>电视剧</h2><div style="text-align:center;">';
   data.dramas.forEach(function(item){
-    var lines=item.info.split('\n');
+    allItems.push(item);
+    var idx = allItems.length - 1;
     var tag=item.newToday?'<div class="new-tag">今日新增</div>':'';
-    html+='<div class="movie"><div class="poster"><div class="poster-text">'+item.name+'</div></div>'+tag+'<div class="info"><span class="channel">'+item.channel+'</span><br>'+lines[0].replace('豆瓣','口碑')+'<br>'+lines[1]+'</div></div>';
+    html+='<div class="movie" onclick="showDetail(allItems['+idx+'])"><div class="poster"><div class="poster-text">'+item.name+'</div></div>'+tag+'<div class="name">'+item.name+'</div><div class="info"><span class="channel">'+item.channel+'</span></div></div>';
   });
   html+='</div>';
   document.getElementById('content').innerHTML=html;
+
+  // 预加载语音列表（部分浏览器需要）
+  if (tts) tts.getVoices();
 }).catch(e=>{document.getElementById('content').innerHTML='加载失败：'+e;});
 </script>
 </body>
