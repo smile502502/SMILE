@@ -1,4 +1,4 @@
-const CACHE_NAME='qydpk-v20261006';
+const CACHE_NAME='qydpk-v20261007';
 const ASSETS=['./','./index.html','./todaymovie_data.json'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
