@@ -32,7 +32,7 @@ h2 { color: #F4D03F; font-size: 15px; border-bottom: 1px solid #3B1010; padding-
 </head>
 <body>
 <h1>清泉看大片</h1>
-<p style="text-align:center;color:#d0c0a0;font-size:12px;">免费看大片_20261007_央视CCTV卫视IPTV今天今晚</p>
+<p style="text-align:center;color:#d0c0a0;font-size:12px;">免费看大片_20261008_央视CCTV卫视IPTV今天今晚</p>
 <div id="content">加载中...</div>
 <div class="overlay" id="overlay" onclick="closeDetail(event)">
   <div class="detail" id="detailBox"></div>
@@ -40,20 +40,23 @@ h2 { color: #F4D03F; font-size: 15px; border-bottom: 1px solid #3B1010; padding-
 <script>
 var allItems = [];
 function getVoiceChannel(ch) {
-  ch = ch.replace(/\s+/g, '');
+  ch = (ch.split('/')[0] || ch).replace(/\s+/g, '');
   var m = ch.match(/CCTV-?(\d+)/);
   if (m) return '央视' + parseInt(m[1]) + '频道';
-  return ch.replace('电视剧','').replace('电影频道','').replace('综合','').replace('社会与法','').trim() || ch;
+  return ch;
 }
 function getVoiceDate(info) {
   var lines = info.split('\n');
   if (lines.length < 2) return '';
-  var m = lines[1].match(/(\d{1,2})\/(\d{1,2})/);
-  if (!m) return '';
-  var month = parseInt(m[1]), day = parseInt(m[2]);
-  var dateStr = '2026' + (month<10?'0'+month:month) + (day<10?'0'+day:day);
-  if (dateStr < '20261001' || dateStr > '20261007') return '';
-  return day + '号';
+  var ms = lines[1].match(/\d{1,2}\/\d{1,2}/g);
+  if (!ms) return '';
+  for (var i = 0; i < ms.length; i++) {
+    var parts = ms[i].split('/');
+    var month = parseInt(parts[0]), day = parseInt(parts[1]);
+    var dateStr = '2026' + (month<10?'0'+month:month) + (day<10?'0'+day:day);
+    if (dateStr >= '20261002' && dateStr <= '20261008') return day + '号';
+  }
+  return '';
 }
 var tts = window.speechSynthesis;
 var ttsTimer = null;
