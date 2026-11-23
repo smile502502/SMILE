@@ -32,7 +32,7 @@ h2 { color: #F4D03F; font-size: 15px; border-bottom: 1px solid #3B1010; padding-
 </head>
 <body>
 <h1>清泉看大片</h1>
-<p style="text-align:center;color:#d0c0a0;font-size:12px;">清泉看大片_2026-11-22</p>
+<p style="text-align:center;color:#d0c0a0;font-size:12px;">清泉看大片_2026-11-23</p>
 <div id="content">加载中...</div>
 <div class="overlay" id="overlay" onclick="closeDetail(event)">
   <div class="detail" id="detailBox"></div>
@@ -45,16 +45,25 @@ function getVoiceChannel(ch) {
   if (m) return '央视' + parseInt(m[1]) + '频道';
   return ch;
 }
+function winYmd(s) {
+  return new Date(parseInt(s.substring(0, 4), 10), parseInt(s.substring(4, 6), 10) - 1, parseInt(s.substring(6, 8), 10));
+}
 function getVoiceDate(info) {
   var lines = info.split('\n');
   if (lines.length < 2) return '';
-  var ms = lines[1].match(/\d{1,2}\/\d{1,2}/g);
+  var ms = lines.slice(1).join('；').match(/\d{1,2}\/\d{1,2}/g);
   if (!ms) return '';
+  var winFrom = winYmd('20261117'), winTo = winYmd('20261123');
+  if (isNaN(winFrom.getTime()) || isNaN(winTo.getTime())) return '';
+  var baseYear = winTo.getFullYear();
   for (var i = 0; i < ms.length; i++) {
     var parts = ms[i].split('/');
-    var month = parseInt(parts[0]), day = parseInt(parts[1]);
-    var dateStr = '2026' + (month<10?'0'+month:month) + (day<10?'0'+day:day);
-    if (dateStr >= '20261116' && dateStr <= '20261122') return day + '号';
+    var month = parseInt(parts[0], 10), day = parseInt(parts[1], 10);
+    var years = [baseYear, baseYear - 1, baseYear + 1];
+    for (var j = 0; j < years.length; j++) {
+      var dt = new Date(years[j], month - 1, day);
+      if (dt >= winFrom && dt <= winTo) return day + '号';
+    }
   }
   return '';
 }
@@ -126,6 +135,11 @@ fetch('todaymovie_data.json').then(r=>r.json()).then(data=>{
   document.getElementById('content').innerHTML=html;
   if (tts) tts.getVoices();
 }).catch(e=>{document.getElementById('content').innerHTML='加载失败：'+e;});
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./service-worker.js').catch(function () {});
+  });
+}
 </script>
 </body>
 </html>
