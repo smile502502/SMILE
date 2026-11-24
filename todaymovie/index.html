@@ -53,7 +53,7 @@ function getVoiceDate(info) {
   if (lines.length < 2) return '';
   var ms = lines.slice(1).join('；').match(/\d{1,2}\/\d{1,2}/g);
   if (!ms) return '';
-  var winFrom = winYmd('20261117'), winTo = winYmd('20261123');
+  var winFrom = winYmd('20261118'), winTo = winYmd('20261124');
   if (isNaN(winFrom.getTime()) || isNaN(winTo.getTime())) return '';
   var baseYear = winTo.getFullYear();
   for (var i = 0; i < ms.length; i++) {
